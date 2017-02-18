@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TargetTabSetupWidget</class>
+ <widget class="QWidget" name="TargetTabSetupWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>512</width>
+    <height>384</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="m_gHttpGroup">
+     <property name="toolTip">
+      <string>Push data to HTTP server</string>
+     </property>
+     <property name="title">
+      <string>HTTP server</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Filename:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="m_gHttpFilename">
+        <property name="toolTip">
+         <string>&lt;b&gt;URI without '/' prefix and without extension&lt;/b&gt;&lt;br/&gt;
+Allowed characters are: &lt;b&gt;A-Z a-z 0-9 _ - . /&lt;/b&gt;&lt;br/&gt;
+Examples:&lt;br/&gt;
+&lt;i&gt;&lt;b&gt;default&lt;/b&gt;&lt;/i&gt; =&gt; &lt;i&gt;http://localhost:42317/&lt;b&gt;default&lt;/b&gt;.js&lt;/i&gt; or &lt;i&gt;http://localhost/&lt;b&gt;default&lt;/b&gt;.json&lt;/i&gt;&lt;br/&gt;
+&lt;i&gt;&lt;b&gt;gps1/data&lt;/b&gt;&lt;/i&gt; =&gt; &lt;i&gt;http://localhost:42317/&lt;b&gt;gps1/data&lt;/b&gt;.js&lt;/i&gt; or &lt;i&gt;http://localhost/&lt;b&gt;gps1/data&lt;/b&gt;.json&lt;/i&gt;</string>
+        </property>
+        <property name="text">
+         <string notr="true">default</string>
+        </property>
+        <property name="placeholderText">
+         <string>URI without '/' prefix and without extension</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Expire delay:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="m_gHttpExpire">
+        <property name="toolTip">
+         <string>&lt;b&gt;Delay before unrefreshed data become obsolete.&lt;/b&gt;&lt;br/&gt;
+After this delay, the HTTP server will return a &lt;i&gt;504 Gateway Time-out&lt;/i&gt; status.&lt;br/&gt;
+Setting this to 0.0 means that data never expire.</string>
+        </property>
+        <property name="suffix">
+         <string> seconds</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <double>65535.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>5.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>JS function:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="m_gHttpFunction">
+        <property name="toolTip">
+         <string>&lt;b&gt;Name of the called JavaScript function&lt;/b&gt;&lt;br/&gt;
+Empty this field if you want the JS object alone.&lt;br/&gt;
+Example: &lt;i&gt;&lt;b&gt;refreshGpsData&lt;/b&gt;&lt;/i&gt; will produce a code similar to
+&lt;pre style=&quot;margin:0px;&quot;&gt;&lt;b&gt;refreshGpsData&lt;/b&gt;( { ..... } );&lt;/pre&gt;</string>
+        </property>
+        <property name="placeholderText">
+         <string>Name of the called JavaScript function</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_gJavascriptGroup">
+     <property name="toolTip">
+      <string>Save data into JavaScript file</string>
+     </property>
+     <property name="title">
+      <string>JavaScript file</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="m_gJavascriptFilename">
+        <property name="toolTip">
+         <string>Target file</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="m_btnJavascriptBrowse">
+        <property name="toolTip">
+         <string>Browse target file</string>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>JS function:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="m_gJavascriptFunction">
+        <property name="toolTip">
+         <string>&lt;b&gt;Name of the called JavaScript function&lt;/b&gt;&lt;br/&gt;
+Empty this field if you want the JS object alone.&lt;br/&gt;
+Example: &lt;i&gt;&lt;b&gt;refreshGpsData&lt;/b&gt;&lt;/i&gt; will produce a code similar to
+&lt;pre style=&quot;margin:0px;&quot;&gt;&lt;b&gt;refreshGpsData&lt;/b&gt;( { ..... } );&lt;/pre&gt;</string>
+        </property>
+        <property name="placeholderText">
+         <string>Name of the called JavaScript function</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="m_gJsonGroup">
+     <property name="toolTip">
+      <string>Save data into JSON file</string>
+     </property>
+     <property name="title">
+      <string>JSON file</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="m_gJsonFilename">
+        <property name="toolTip">
+         <string>Target file</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="m_btnJsonBrowse">
+        <property name="toolTip">
+         <string>Browse target file</string>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

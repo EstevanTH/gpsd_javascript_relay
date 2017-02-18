@@ -1,0 +1,213 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<!-- Configuration BEGIN -->
+		<style type="text/css">
+			body {
+				font-family: Segoe UI Black, Arial Black, Sans-Serif;
+				font-size: 14pt;
+				color: white;
+			}
+			span.back {
+				background-color: rgba( 0,0,0, 0.5 );
+			}
+		</style>
+		<script type="text/javascript">
+			var driver = "Mohamed RACHID";
+			var vehicle = "Citroën Nemo 1.3 Multijet 75ch";
+			var featuredRate = 7000; // ms
+			var featured = [
+				// "Moteur I4 DOHC Diesel à rampe commune",
+				// "Turbocompresseur à géométrie fixe",
+				// "190Nm à 1750tr/min",
+				// "75ch à 3750tr/min",
+				// "Limiteur à 5200tr/min",
+				// "",
+				// "<span style='color:palegreen;'>Conduite économique</span>",
+				// "<span style='color:pink;'>Conduite responsable</span>",
+			];
+			var fps = 30;
+			var list_dayw = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+			var list_month = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+			var gpsRelayUrl = "http://localhost:42317/default.js";
+			var gpsRate = fps;
+		</script>
+	<!-- Configuration END -->
+	<script type="text/javascript">
+		setTimeout( function(){
+			document.getElementById( "vehicle" ).innerHTML = vehicle;
+			document.getElementById( "driver" ).innerHTML = driver;
+		}, 0 );
+		
+		function fillWithZero( num ){
+			var str = num.toString();
+			if( str.length<2 ){
+				return "0"+str;
+			}
+			return str;
+		}
+		function refreshClock(){
+			var d = new Date();
+			document.getElementById( "dayw" ).innerHTML = list_dayw[d.getDay()];
+			document.getElementById( "dayn" ).innerHTML = d.getDate();
+			document.getElementById( "month" ).innerHTML = list_month[d.getMonth()];
+			document.getElementById( "year" ).innerHTML = d.getFullYear();
+			document.getElementById( "hour" ).innerHTML = fillWithZero( d.getHours() );
+			document.getElementById( "minute" ).innerHTML = fillWithZero( d.getMinutes() );
+			document.getElementById( "second" ).innerHTML = fillWithZero( d.getSeconds() );
+		}
+		setTimeout( refreshClock, 0 );
+		var tRefreshClock = setInterval( refreshClock, ( 1/fps )*1000 );
+		
+		if( featured.length>0 ){
+			var lastFeatured = featured.length-1;
+			function changeFeatured(){
+				++lastFeatured;
+				if( lastFeatured>=featured.length ) lastFeatured = 0;
+				document.getElementById( "featured" ).innerHTML = featured[lastFeatured];
+			}
+			setTimeout( changeFeatured, 0 );
+			var tChangeFeatured = setInterval( changeFeatured, featuredRate );
+		}
+		
+		function handleGpsUpdate( gpsObject ){
+			if( typeof( gpsObject.speed )=="number" ){
+				document.getElementById( "speed" ).innerHTML = ( gpsObject.speed*3.6 ).toFixed( 1 );
+			}
+			else{
+				// lost signal: keep previous value
+			}
+			if( typeof( gpsObject.alt )=="number" ){
+				document.getElementById( "altitude" ).innerHTML = gpsObject.alt.toFixed( 0 );
+			}
+			else{
+				// lost signal or 2D: keep previous value
+			}
+		}
+		function handleGpsUpdateFailure( status ){
+			document.getElementById( "speed" ).innerHTML = "?";
+			document.getElementById( "altitude" ).innerHTML = "?";
+		}
+	</script>
+	<script type="text/javascript">
+		// http://fr.wikipedia.org/wiki/XMLHttpRequest#Cr.C3.A9ation_d.27un_objet_XMLHttpRequest
+		// http://blog.pascal-martin.fr/post/Ajax-un-premier-appel-avec-XMLHttpRequest
+		// http://www.siteduzero.com/tutoriel-3-557807-xmlhttprequest.html
+		function createXhrObject(){
+			if( window.XMLHttpRequest ){
+				return new XMLHttpRequest();
+			}
+			if( window.ActiveXObject ){
+				var names = [
+					"Msxml2.XMLHTTP.6.0",
+					"Msxml2.XMLHTTP.3.0",
+					"Msxml2.XMLHTTP",
+					"Microsoft.XMLHTTP"
+				];
+				for( var i in names ){
+					try{ return new ActiveXObject( names[i] ); }
+					catch( e ){}
+				}
+			}
+			return null; // unsupported
+		}
+	</script>
+	<script type="text/javascript">
+		do{
+			var relaytime = 0;
+			var busy = false;
+			function updateGps(){
+				if( !busy ){
+					var xhr = createXhrObject();
+					if( xhr!=null ){ // XHR supported
+						xhr.open( "GET", gpsRelayUrl, true );
+						xhr.onreadystatechange = function(){
+							if( xhr.readyState==4 ){
+								busy = false;
+								if( xhr.status==200 ){
+									if( xhr.responseText.length!=0 ){
+										// Escape dangerous characters:
+										var gpsObject = xhr.responseText.replace( ";", "&#x3B;" );
+										gpsObject = gpsObject.replace( "(", "&#x28;" );
+										gpsObject = gpsObject.replace( ")", "&#x29;" );
+										gpsObject = "("+gpsObject+")";
+										// Evaluate updated object:
+										gpsObject = eval( gpsObject );
+										if( gpsObject && typeof( gpsObject )=="object" && gpsObject.relaytime>relaytime ){
+											relaytime = gpsObject.relaytime;
+											handleGpsUpdate( gpsObject );
+										}
+									}
+									else{
+										handleGpsUpdateFailure( 200 );
+									}
+								}
+								else{
+									handleGpsUpdateFailure( xhr.status );
+								}
+							}
+						};
+						busy = true;
+						xhr.send( null );
+					}
+				}
+			}
+			setInterval( updateGps, 1000/gpsRate );
+			updateGps();
+		} while( false );
+	</script>
+	<style type="text/css">
+		table {
+			width: 100%;
+			height: 100%;
+			border-width: 0px;
+			border-collapse: collapse;
+			padding: 0px;
+			font-size: inherit;
+		}
+		td.top {
+			vertical-align: top;
+		}
+		td.bottom {
+			vertical-align: bottom;
+		}
+		td.left {
+			text-align: left;
+		}
+		td.right {
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td class="top left">
+				<span class="back">
+					<span id="vehicle"></span><br/>
+					<span id="featured"></span>
+				</span>
+			</td>
+			<td class="top right">
+				<span class="back">
+					<span id="dayw"></span> <span id="dayn"></span> <span id="month"></span> <span id="year"></span><br/>
+					<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span>
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="bottom left">
+				<span class="back">
+					&#x21A5; <span id="altitude">NaN</span> m<br/>
+					&#x21DB; <span id="speed">NaN</span> km/h
+				</span>
+			</td>
+			<td class="bottom right">
+				<span class="back">
+					Conducteur : <span id="driver"></span>
+				</span>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>

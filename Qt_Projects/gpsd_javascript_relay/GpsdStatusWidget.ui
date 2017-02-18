@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GpsdStatusWidget</class>
+ <widget class="QFrame" name="GpsdStatusWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>512</width>
+    <height>384</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Box</enum>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="toolTip">
+         <string>Connection status</string>
+        </property>
+        <property name="text">
+         <string>&lt;b&gt;Status:&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_gStatus"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="toolTip">
+         <string>Host address</string>
+        </property>
+        <property name="text">
+         <string>&lt;b&gt;Host:&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_gHost"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="toolTip">
+         <string notr="true">Name of originating device</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;device&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_gDevice"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="toolTip">
+         <string notr="true">Time/date stamp, UTC.
+May have a fractional part of up to .001sec precision.
+May be absent if mode is not 2 or 3</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;time&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_gTime"/>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>59</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="m_gName">
+     <property name="toolTip">
+      <string>Custom name</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="m_btnStop">
+     <property name="toolTip">
+      <string>Stop GPSD client</string>
+     </property>
+     <property name="text">
+      <string>Stop</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QPushButton" name="m_btnStart">
+     <property name="toolTip">
+      <string>Start GPSD client</string>
+     </property>
+     <property name="text">
+      <string>Start</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" colspan="2">
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="toolTip">
+         <string notr="true">GPS status: 2=DGPS fix, otherwise not present</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;status&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_19">
+        <property name="toolTip">
+         <string notr="true">Altitude in meters.
+Present if mode is 3</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;alt&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="toolTip">
+         <string notr="true">Course over ground, degrees from true north</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;track&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLabel" name="m_gTrack"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="m_gAlt"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="m_gLon"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="toolTip">
+         <string notr="true">Latitude in degrees: +/- signifies North/South.
+Present when mode is 2 or 3</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;lat&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_23">
+        <property name="toolTip">
+         <string notr="true">Speed over ground, meters per second</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;speed&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <widget class="QLabel" name="label_25">
+        <property name="toolTip">
+         <string notr="true">Climb (positive) or sink (negative) rate, meters per second</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;climb&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="toolTip">
+         <string notr="true">Longitude in degrees: +/- signifies East/West.
+Present when mode is 2 or 3</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;lon&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="m_gLat"/>
+      </item>
+      <item row="10" column="1">
+       <widget class="QLabel" name="m_gSpeed"/>
+      </item>
+      <item row="12" column="1">
+       <widget class="QLabel" name="m_gClimb"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_27">
+        <property name="toolTip">
+         <string notr="true">Estimated timestamp error (seconds, 95% confidence).
+Present if time is present</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;ept&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_29">
+        <property name="toolTip">
+         <string notr="true">Latitude error estimate in meters, 95% confidence.
+Present if mode is 2 or 3 and DOPs can be calculated from the satellite view</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;epy&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label_28">
+        <property name="toolTip">
+         <string notr="true">Longitude error estimate in meters, 95% confidence.
+Present if mode is 2 or 3 and DOPs can be calculated from the satellite view</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;epx&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QLabel" name="label_31">
+        <property name="toolTip">
+         <string notr="true">Direction error estimate in degrees, 95% confidence</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;epd&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="2">
+       <widget class="QLabel" name="label_32">
+        <property name="toolTip">
+         <string notr="true">Speed error estinmate in meters/sec, 95% confidence</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;eps&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="2">
+       <widget class="QLabel" name="label_33">
+        <property name="toolTip">
+         <string notr="true">Climb/sink error estimate in meters/sec, 95% confidence</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;epc&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="m_gMode"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="m_gStatusGps"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="toolTip">
+         <string notr="true">NMEA mode</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;mode&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLabel" name="label_30">
+        <property name="toolTip">
+         <string notr="true">Estimated vertical error in meters, 95% confidence.
+Present if mode is 3 and DOPs can be calculated from the satellite view</string>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;b&gt;&quot;epv&quot;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="m_gEpt"/>
+      </item>
+      <item row="12" column="3">
+       <widget class="QLabel" name="m_gEpc"/>
+      </item>
+      <item row="8" column="3">
+       <widget class="QLabel" name="m_gEpd"/>
+      </item>
+      <item row="10" column="3">
+       <widget class="QLabel" name="m_gEps"/>
+      </item>
+      <item row="4" column="3">
+       <widget class="QLabel" name="m_gEpx"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLabel" name="m_gEpy"/>
+      </item>
+      <item row="6" column="3">
+       <widget class="QLabel" name="m_gEpv"/>
+      </item>
+      <item row="14" column="0" colspan="4">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>79</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

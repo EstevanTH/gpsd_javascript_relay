@@ -1,0 +1,98 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><!-- µ -->
+<script type="text/javascript">
+	// Configuration:
+	var gpsRelayUrl = "http://localhost:42317/default.js";
+	var gpsRate = 30;
+	// Handle updates:
+	function handleGpsUpdate( gpsObject ){
+		if( typeof( gpsObject.speed )=="number" ){
+			document.getElementById( "speed_m_s" ).innerHTML = gpsObject.speed;
+			document.getElementById( "speed_km_h" ).innerHTML = gpsObject.speed*3.6;
+			document.getElementById( "speed_mi_h" ).innerHTML = gpsObject.speed*2.2369362920544022906227630637079;
+		}
+		else{
+			// lost signal: keep previous values
+		}
+	}
+	function handleGpsUpdateFailure( status ){
+		document.getElementById( "speed_m_s" ).innerHTML = "?";
+		document.getElementById( "speed_km_h" ).innerHTML = "?";
+		document.getElementById( "speed_mi_h" ).innerHTML = "?";
+	}
+</script>
+<script type="text/javascript">
+	// http://fr.wikipedia.org/wiki/XMLHttpRequest#Cr.C3.A9ation_d.27un_objet_XMLHttpRequest
+	// http://blog.pascal-martin.fr/post/Ajax-un-premier-appel-avec-XMLHttpRequest
+	// http://www.siteduzero.com/tutoriel-3-557807-xmlhttprequest.html
+	function createXhrObject(){
+		if( window.XMLHttpRequest ){
+			return new XMLHttpRequest();
+		}
+		if( window.ActiveXObject ){
+			var names = [
+				"Msxml2.XMLHTTP.6.0",
+				"Msxml2.XMLHTTP.3.0",
+				"Msxml2.XMLHTTP",
+				"Microsoft.XMLHTTP"
+			];
+			for( var i in names ){
+				try{ return new ActiveXObject( names[i] ); }
+				catch( e ){}
+			}
+		}
+		return null; // unsupported
+	}
+</script>
+<script type="text/javascript">
+	do{
+		var relaytime = 0;
+		var busy = false;
+		function updateGps(){
+			if( !busy ){
+				var xhr = createXhrObject();
+				if( xhr!=null ){ // XHR supported
+					xhr.open( "GET", gpsRelayUrl, true );
+					xhr.onreadystatechange = function(){
+						if( xhr.readyState==4 ){
+							busy = false;
+							if( xhr.status==200 ){
+								if( xhr.responseText.length!=0 ){
+									// Escape dangerous characters:
+									var gpsObject = xhr.responseText.replace( ";", "&#x3B;" );
+									gpsObject = gpsObject.replace( "(", "&#x28;" );
+									gpsObject = gpsObject.replace( ")", "&#x29;" );
+									gpsObject = "("+gpsObject+")";
+									// Evaluate updated object:
+									gpsObject = eval( gpsObject );
+									if( gpsObject && typeof( gpsObject )=="object" && gpsObject.relaytime>relaytime ){
+										relaytime = gpsObject.relaytime;
+										handleGpsUpdate( gpsObject );
+									}
+								}
+								else{
+									handleGpsUpdateFailure( 200 );
+								}
+							}
+							else{
+								handleGpsUpdateFailure( xhr.status );
+							}
+						}
+					};
+					busy = true;
+					xhr.send( null );
+				}
+			}
+		}
+		setInterval( updateGps, 1000/gpsRate );
+		updateGps();
+	} while( false );
+</script>
+</head>
+<body>
+<p>Speed: <span id="speed_m_s">NaN</span> m/s</p>
+<p>Speed: <span id="speed_km_h">NaN</span> km/h</p>
+<p>Speed: <span id="speed_mi_h">NaN</span> mi/h</p>
+</body>
+</html>
