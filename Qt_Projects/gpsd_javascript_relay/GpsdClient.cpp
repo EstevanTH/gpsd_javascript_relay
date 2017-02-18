@@ -1,4 +1,5 @@
 #include "GpsdClient.h"
+#include "compiler_options.h"
 
 QString const GpsdClient::s_titleGpsdClient = QObject::tr( "GPSD client" );
 QLinkedList<GpsdClient*> GpsdClient::s_gpsdClients;
@@ -175,7 +176,6 @@ void GpsdClient::startClient(){
 	else{
 		if( m_javascriptEnabled ){
 			m_outputJavascript = new QFile( m_javascriptFilename, this );
-			// if( !m_outputJavascript->open( QIODevice::WriteOnly|QIODevice::Truncate|QIODevice::Text ) ){
 			if( !m_outputJavascript->open( QIODevice::Append|QIODevice::Text ) ){
 				delete m_outputJavascript;
 				m_outputJavascript = 0;
@@ -190,7 +190,6 @@ void GpsdClient::startClient(){
 		}
 		if( m_jsonEnabled ){
 			m_outputJson = new QFile( m_jsonFilename, this );
-			// if( !m_outputJson->open( QIODevice::WriteOnly|QIODevice::Truncate|QIODevice::Text ) ){
 			if( !m_outputJson->open( QIODevice::Append|QIODevice::Text ) ){
 				delete m_outputJson;
 				m_outputJson = 0;
@@ -590,7 +589,7 @@ void GpsdClient::incomingData(){
 						// Format the JS object:
 						char javascriptObject[GPSD_JS_MAX_LENGTH];
 						QByteArray serializeDevice, serializeStatus, serializeMode, serializeTime, serializeEpt, serializeLat, serializeLon, serializeAlt, serializeEpx, serializeEpy, serializeEpv, serializeTrack, serializeSpeed, serializeClimb, serializeEpd, serializeEps, serializeEpc, serializeClientTime;
-						snprintf( javascriptObject, GPSD_JS_MAX_LENGTH, s_javascriptTpvObjectFormat,
+						COMPAT_SNPRINTF( javascriptObject, GPSD_JS_MAX_LENGTH, s_javascriptTpvObjectFormat )
 							serializeJavascriptField( serializeDevice, m_dataTpv.device, GPSD_TPV_NULL_DEVICE ),
 							serializeJavascriptField( serializeStatus, m_dataTpv.status, GPSD_TPV_NULL_STATUS ),
 							serializeJavascriptField( serializeMode, m_dataTpv.mode, GPSD_TPV_NULL_MODE ),

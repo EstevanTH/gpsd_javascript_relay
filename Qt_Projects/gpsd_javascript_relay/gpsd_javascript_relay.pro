@@ -37,7 +37,8 @@ HEADERS  += MainWindow.h \
     GpsdHost.h \
     Application.h \
     ValidatorHttpFilename.h \
-    ValidatorJavascriptFunction.h
+    ValidatorJavascriptFunction.h \
+    compiler_options.h
 
 FORMS    += MainWindow.ui \
     TargetTabSetupWidget.ui \
