@@ -1,7 +1,7 @@
 # GPSD to JavaScript relay
 A small tool producing JS &amp; JSON output based on GPS data provided by a GPSD server
 
-The program is available in :gb: English and :fr: French.
+The program is available in :us: English and :fr: French.
 
 ## Introduction
 This is my first mini-project in C++. As a beginner I would like to meet other C++ developers and fix bugs.
