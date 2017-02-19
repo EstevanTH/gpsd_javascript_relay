@@ -5,6 +5,8 @@ The program is available in :us: English and :fr: French.
 
 **:dart: Beta stage:** Please try hard the program, do unexpected actions, try various GPSD servers, etc.
 
+:blue_book: Find more information on [the Wiki of this project](/wiki)!
+
 ## Introduction
 This is my first mini-project in C++. As a beginner I would like to meet other C++ developers and fix bugs.
 
