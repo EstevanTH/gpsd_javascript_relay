@@ -10,6 +10,7 @@ Application::CommandLineOptions Application::s_commandLineOptions = {
 	false,
 	false,
 	false,
+	false,
 };
 QString const Application::s_appTitle = "GPSD to JavaScript relay";
 
@@ -33,6 +34,9 @@ Application::Application(int &argc, char **argv):
 		}
 		else if( str_lower=="--noautostart" ){
 			s_commandLineOptions.noautostart = true;
+		}
+		else if( str_lower=="--traynomessages" ){
+			s_commandLineOptions.traynomessages = true;
 		}
 	}
 	// Prepare for application settings:

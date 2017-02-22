@@ -24,16 +24,18 @@ class GpsdStatusWidget:
 		GpsdClient* getGpsdClient() const;
 		
 	private slots:
-		void statusChanged(QAbstractSocket::SocketState status, QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol) const;
+		void statusChanged(QAbstractSocket::SocketState status) const;
+		void hostChanged(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
 		void dataTpvChanged(GpsdClient::DataTpv const& data) const;
+		void socketException(const char* description) const;
 		
 	private:
 		GpsdClient* m_gpsdClient;
-		static QString const s_statusTextStopped;
-		static QString const s_statusTextHostLookup;
-		static QString const s_statusTextConnecting;
-		static QString const s_statusTextConnected;
-		static QString const s_statusTextUnconnected;
+		static QString s_statusTextStopped;
+		static QString s_statusTextHostLookup;
+		static QString s_statusTextConnecting;
+		static QString s_statusTextConnected;
+		static QString s_statusTextUnconnected;
 		static QString const s_statusProtocolTcp;
 		static QString const s_statusProtocolUdp;
 		static QString const s_unitDegrees;

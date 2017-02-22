@@ -6,6 +6,8 @@ It handles most of the startup work as well.
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define MAINWINDOW_TRAY_GPSD_CONNECTION_MESSAGE_DURATION 4000
+
 #include <QWidget>
 #include <QCloseEvent>
 #include <QMenu>
@@ -47,12 +49,14 @@ class MainWindow:
 		void flagHttpSetupChanged();
 		GpsdClient* makeNewGpsdClient();
 		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+		void gpsdConnectionStateChanged(bool connected);
 		
 	private:
 		bool m_httpSetupChanged;
 		QPushButton* m_btnGpsdNewTab;
 		QSystemTrayIcon* m_trayIcon;
-		// bool m_quitRequested;
+		static QString s_messageConnected;
+		static QString s_messageConnectionLost;
 };
 
 #endif // MAINWINDOW_H

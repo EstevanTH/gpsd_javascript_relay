@@ -14,6 +14,7 @@ Only 1 instance can be created, so attributes and most methods are static.
 #define APP_CLO_CONFIGNOSAVE ( Application::getCommandLineOptions().confignosave )
 #define APP_CLO_MINIMIZED ( Application::getCommandLineOptions().minimized )
 #define APP_CLO_NOAUTOSTART ( Application::getCommandLineOptions().noautostart )
+#define APP_CLO_TRAYNOMESSAGES ( Application::getCommandLineOptions().traynomessages )
 
 #include <QApplication>
 #include <QIcon>
@@ -40,6 +41,7 @@ class Application: public QApplication{
 			bool confignosave;
 			bool minimized;
 			bool noautostart;
+			bool traynomessages;
 		} CommandLineOptions;
 		
 		Application(int &argc, char **argv);

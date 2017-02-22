@@ -4,28 +4,33 @@
 <context>
     <name>GpsdClient</name>
     <message>
-        <location filename="GpsdClient.cpp" line="170"/>
+        <location filename="GpsdClient.cpp" line="33"/>
+        <source>GPSD client</source>
+        <translation>Client GPSD</translation>
+    </message>
+    <message>
+        <location filename="GpsdClient.cpp" line="176"/>
         <source>The GPSD client &lt;b&gt;</source>
         <translation>Le client GPSD &lt;b&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="170"/>
+        <location filename="GpsdClient.cpp" line="176"/>
         <source>&lt;/b&gt; has an empty hosts list!</source>
         <translation>&lt;/b&gt; a une liste d&apos;hôtes vide !</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="185"/>
+        <location filename="GpsdClient.cpp" line="190"/>
         <source>Unable to open JavaScript output file for &lt;b&gt;</source>
         <translation>Impossible d&apos;ouvrir le fichier de sortie JavaScript pour &lt;b&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="185"/>
-        <location filename="GpsdClient.cpp" line="200"/>
+        <location filename="GpsdClient.cpp" line="190"/>
+        <location filename="GpsdClient.cpp" line="204"/>
         <source>&lt;/b&gt;:&lt;br/&gt;</source>
         <translation>&lt;/b&gt; :&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="200"/>
+        <location filename="GpsdClient.cpp" line="204"/>
         <source>Unable to open JSON output file for &lt;b&gt;</source>
         <translation>Impossible d&apos;ouvrir le fichier de sortie JSON pour &lt;b&gt;</translation>
     </message>
@@ -122,6 +127,31 @@ UDP symétrique : UDP avec port local = port distant</translation>
         <source>Start</source>
         <translation>Démarrer</translation>
     </message>
+    <message>
+        <location filename="GpsdStatusWidget.cpp" line="8"/>
+        <source>Stopped</source>
+        <translation>Arrêté</translation>
+    </message>
+    <message>
+        <location filename="GpsdStatusWidget.cpp" line="9"/>
+        <source>Resolving</source>
+        <translation>Résolution...</translation>
+    </message>
+    <message>
+        <location filename="GpsdStatusWidget.cpp" line="10"/>
+        <source>Connecting</source>
+        <translation>Connexion...</translation>
+    </message>
+    <message>
+        <location filename="GpsdStatusWidget.cpp" line="11"/>
+        <source>Connected</source>
+        <translation>Connecté</translation>
+    </message>
+    <message>
+        <location filename="GpsdStatusWidget.cpp" line="12"/>
+        <source>Unconnected</source>
+        <translation>Déconnecté</translation>
+    </message>
 </context>
 <context>
     <name>GpsdTabSetupWidget</name>
@@ -196,9 +226,10 @@ UDP symétrique : UDP avec port local = port distant</translation>
     </message>
     <message>
         <location filename="HttpServer.cpp" line="98"/>
-        <source>The HTTP server could not start:
-</source>
-        <translation>Le serveur HTTP n&apos;a pas pu démarrer :</translation>
+        <source>The HTTP server could not start:&lt;br/&gt;</source>
+        <oldsource>The HTTP server could not start:
+</oldsource>
+        <translation>Le serveur HTTP n&apos;a pas pu démarrer :&lt;br/&gt;</translation>
     </message>
 </context>
 <context>
@@ -339,73 +370,60 @@ GPSD</translation>
         <translation>Petit outil produisant une sortie JS &amp; JSON basée sur des données GPS fournies par un serveur GPSD</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="14"/>
+        <location filename="MainWindow.cpp" line="9"/>
+        <source>Connection established</source>
+        <translation>Connexion établie</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="10"/>
+        <source>Connection lost</source>
+        <translation>Connexion perdue</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="17"/>
         <source>Add a GPSD server</source>
         <translation>Ajouter un serveur GPSD</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="147"/>
+        <location filename="MainWindow.cpp" line="151"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restaurer</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="148"/>
-        <location filename="MainWindow.cpp" line="219"/>
+        <location filename="MainWindow.cpp" line="152"/>
+        <location filename="MainWindow.cpp" line="223"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="218"/>
+        <location filename="MainWindow.cpp" line="222"/>
         <source>Do you want to quit or minimize in tray?</source>
         <translation>Voulez-vous quitter ou minimiser dans la zone de notification ?</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="220"/>
+        <location filename="MainWindow.cpp" line="224"/>
         <source>&amp;Minimize in tray</source>
         <translation>&amp;Minimiser dans la zone de notification</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="292"/>
+        <location filename="MainWindow.cpp" line="296"/>
         <source>Running</source>
         <translation>Démarré</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="294"/>
+        <location filename="MainWindow.cpp" line="298"/>
         <source>Stopped</source>
         <translation>Arrêté</translation>
     </message>
-</context>
-<context>
-    <name>QObject</name>
     <message>
-        <location filename="GpsdClient.cpp" line="3"/>
-        <source>GPSD client</source>
-        <translation>Client GPSD</translation>
+        <location filename="MainWindow.cpp" line="340"/>
+        <source>GPSD client &quot;</source>
+        <translation>Client GPSD &quot;</translation>
     </message>
     <message>
-        <location filename="GpsdStatusWidget.cpp" line="20"/>
-        <source>&lt;span style=&apos;color:red;&apos;&gt;Stopped&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;color:red;&apos;&gt;Arrêté&lt;/span&gt;</translation>
-    </message>
-    <message>
-        <location filename="GpsdStatusWidget.cpp" line="21"/>
-        <source>&lt;span style=&apos;color:orange;&apos;&gt;Resolving&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;color:orange;&apos;&gt;Résolution...&lt;/span&gt;</translation>
-    </message>
-    <message>
-        <location filename="GpsdStatusWidget.cpp" line="22"/>
-        <source>&lt;span style=&apos;color:orange;&apos;&gt;Connecting&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;color:orange;&apos;&gt;Connexion...&lt;/span&gt;</translation>
-    </message>
-    <message>
-        <location filename="GpsdStatusWidget.cpp" line="23"/>
-        <source>&lt;span style=&apos;color:green;&apos;&gt;Connected&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;color:green;&apos;&gt;Connecté&lt;/span&gt;</translation>
-    </message>
-    <message>
-        <location filename="GpsdStatusWidget.cpp" line="24"/>
-        <source>&lt;span style=&apos;color:red;&apos;&gt;Unconnected&lt;/span&gt;</source>
-        <translation>&lt;span style=&apos;color:red;&apos;&gt;Déconnecté&lt;/span&gt;</translation>
+        <location filename="MainWindow.cpp" line="340"/>
+        <source>&quot;</source>
+        <translation>&quot;</translation>
     </message>
 </context>
 <context>

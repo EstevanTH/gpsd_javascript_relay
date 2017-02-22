@@ -3,9 +3,12 @@
 MainWindow::MainWindow(QWidget *parent):
 	QWidget( parent ),
 	m_httpSetupChanged( false ),
-	m_trayIcon( 0 )/*,
-	m_quitRequested( false )*/
+	m_trayIcon( 0 )
 {
+	// Translation:
+	if( s_messageConnected.isEmpty() ) s_messageConnected = tr( "Connection established" );
+	if( s_messageConnectionLost.isEmpty() ) s_messageConnectionLost = tr( "Connection lost" );
+	
 	// Main interface:
 	setupUi( this );
 	m_btnGpsdNewTab = new QPushButton( m_gSourcesTabs );
@@ -97,6 +100,7 @@ void MainWindow::addedGpsdClient(GpsdClient* gpsdClient){
 		m_gGpsdClientMonitorsLayout->addWidget( monitor );
 	targets->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
 	setup->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
+	connect( gpsdClient, SIGNAL( connectionStateChanged(bool) ), this, SLOT( gpsdConnectionStateChanged(bool) ) );
 }
 void MainWindow::removedGpsdClient(GpsdClient* gpsdClient){
 	GpsdTabSetupWidget* setup;
@@ -323,5 +327,26 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason){
 		default:
 			// nothing
 		break;
+	}
+}
+
+QString MainWindow::s_messageConnected;
+QString MainWindow::s_messageConnectionLost;
+
+void MainWindow::gpsdConnectionStateChanged(bool connected){
+	if( !APP_CLO_TRAYNOMESSAGES && m_trayIcon && m_trayIcon->isVisible() ){
+		GpsdClient const* gpsdClient = qobject_cast<GpsdClient const*>( sender() );
+		if( gpsdClient ){
+			QString title = tr( "GPSD client \"" )+gpsdClient->getName()+tr( "\"" );
+			QString const* message;
+			if( connected ) message = &s_messageConnected;
+			else message = &s_messageConnectionLost;
+			m_trayIcon->showMessage(
+				title,
+				*message,
+				QSystemTrayIcon::Information,
+				MAINWINDOW_TRAY_GPSD_CONNECTION_MESSAGE_DURATION
+			);
+		}
 	}
 }

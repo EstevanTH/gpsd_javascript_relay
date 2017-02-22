@@ -1,1 +1,0 @@
-- Binding GPSD client sockets can crash the program (segmentation fault). [Windows NT 6.3]

@@ -4,31 +4,41 @@ GpsdStatusWidget::GpsdStatusWidget(GpsdClient* gpsdClient, QWidget *parent):
 	QFrame( parent ),
 	m_gpsdClient( gpsdClient )
 {
+	// Translation:
+	if( s_statusTextStopped.isEmpty() ) s_statusTextStopped = QString( "<span style='color:red;'>" )+tr( "Stopped" )+QString( "</span>" );
+	if( s_statusTextHostLookup.isEmpty() ) s_statusTextHostLookup = QString( "<span style='color:orange;'>" )+tr( "Resolving" )+QString( "</span>" );
+	if( s_statusTextConnecting.isEmpty() ) s_statusTextConnecting = QString( "<span style='color:orange;'>" )+tr( "Connecting" )+QString( "</span>" );
+	if( s_statusTextConnected.isEmpty() ) s_statusTextConnected = QString( "<span style='color:green;'>" )+tr( "Connected" )+QString( "</span>" );
+	if( s_statusTextUnconnected.isEmpty() ) s_statusTextUnconnected = QString( "<span style='color:fuchsia;'>" )+tr( "Unconnected" )+QString( "</span>" );
+	
+	// Initialization:
 	setupUi( this );
 	connect( gpsdClient, SIGNAL( nameChanged(QString const&) ), m_gName, SLOT( setText(QString const&) ) );
-	connect( gpsdClient, SIGNAL( statusChanged(QAbstractSocket::SocketState, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( statusChanged(QAbstractSocket::SocketState, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ) );
+	connect( gpsdClient, SIGNAL( statusChanged(QAbstractSocket::SocketState, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( statusChanged(QAbstractSocket::SocketState) ) );
+	connect( gpsdClient, SIGNAL( hostChanged(QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( hostChanged(QString const&, quint16 const&, QAbstractSocket::SocketType const&) ) );
 	connect( gpsdClient, SIGNAL( dataTpvChanged(GpsdClient::DataTpv const&) ), this, SLOT( dataTpvChanged(GpsdClient::DataTpv const&) ) );
 	connect( m_btnStop, SIGNAL( clicked(bool) ), gpsdClient, SLOT( stopClient() ) );
 	connect( m_btnStart, SIGNAL( clicked(bool) ), gpsdClient, SLOT( startClient() ) );
-	m_gStatus->setText( GpsdStatusWidget::s_statusTextStopped );
+	m_gStatus->setText( s_statusTextStopped );
 }
 
 GpsdClient* GpsdStatusWidget::getGpsdClient() const{
 	return m_gpsdClient;
 }
 
-QString const GpsdStatusWidget::s_statusTextStopped = QObject::tr( "<span style='color:red;'>Stopped</span>" );
-QString const GpsdStatusWidget::s_statusTextHostLookup = QObject::tr( "<span style='color:orange;'>Resolving</span>" );
-QString const GpsdStatusWidget::s_statusTextConnecting = QObject::tr( "<span style='color:orange;'>Connecting</span>" );
-QString const GpsdStatusWidget::s_statusTextConnected = QObject::tr( "<span style='color:green;'>Connected</span>" );
-QString const GpsdStatusWidget::s_statusTextUnconnected = QObject::tr( "<span style='color:red;'>Unconnected</span>" );
+QString GpsdStatusWidget::s_statusTextStopped;
+QString GpsdStatusWidget::s_statusTextHostLookup;
+QString GpsdStatusWidget::s_statusTextConnecting;
+QString GpsdStatusWidget::s_statusTextConnected;
+QString GpsdStatusWidget::s_statusTextUnconnected;
 QString const GpsdStatusWidget::s_statusProtocolTcp = " TCP";
 QString const GpsdStatusWidget::s_statusProtocolUdp = " UDP";
 
-void GpsdStatusWidget::statusChanged(QAbstractSocket::SocketState status, QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol) const{
+void GpsdStatusWidget::statusChanged(QAbstractSocket::SocketState status) const{
 	QString const* statusText;
 	if( m_gpsdClient->isManuallyStopped() ){
 		statusText = &s_statusTextStopped;
+		m_gHost->setText( s_nullValue );
 	}
 	else{
 		switch( status ){
@@ -46,21 +56,17 @@ void GpsdStatusWidget::statusChanged(QAbstractSocket::SocketState status, QStrin
 		}
 	}
 	m_gStatus->setText( *statusText );
-	if( status==QAbstractSocket::UnconnectedState ){
-		m_gHost->setText( "-" );
+}
+
+void GpsdStatusWidget::hostChanged(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol){
+	QString const* protocolText;
+	if( protocol!=QAbstractSocket::UdpSocket ){
+		protocolText = &s_statusProtocolTcp;
 	}
 	else{
-		QString hostText = hostname;
-		hostText += ':';
-		hostText += QString::number( port );
-		if( protocol!=QAbstractSocket::UdpSocket ){
-			hostText += s_statusProtocolTcp;
-		}
-		else{
-			hostText += s_statusProtocolUdp;
-		}
-		m_gHost->setText( hostText );
+		protocolText = &s_statusProtocolUdp;
 	}
+	m_gHost->setText( hostname+':'+QString::number( port )+( *protocolText ) );
 }
 
 QString const GpsdStatusWidget::s_unitDegrees = "°";
@@ -191,4 +197,8 @@ void GpsdStatusWidget::dataTpvChanged(GpsdClient::DataTpv const& data) const{
 	else{
 		m_gEpc->setText( s_nullValue );
 	}
+}
+
+void GpsdStatusWidget::socketException(const char* description) const{
+	m_gStatus->setText( QString( "<span style='color:red;'>" )+QString::fromLatin1( description )+QString( "</span>" ) );
 }

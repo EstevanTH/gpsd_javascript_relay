@@ -21,9 +21,12 @@ The socket is never re-used.
 #include "Application.h"
 #include "GpsdHost.h"
 
+// #include <QtDebug> // debug
+
 #define GPSD_EXPIRE_UDP_CONNECT 5000 // ms after sending the first ?VERSION; request
 #define GPSD_RETRY_UDP_DELAY 1000 // ms between ?VERSION; requests to confirm link
 #define GPSD_EXPIRE_UDP_DATA 30000 // ms, m_lastAnswer-m_lastRequest with m_expectedAnswers>1 (when confirmed link)
+#define GPSD_SOCKET_FAILURE_WAIT 1000
 
 #define GPSD_RECEIVE_BUFFER 16384 // poor performance if big and full
 #define GPSD_RECEIVE_BUFFER_HALF ( GPSD_RECEIVE_BUFFER/2 )
@@ -132,7 +135,9 @@ class GpsdClient: public QObject{
 	signals:
 		void nameChanged(QString const& name);
 		void statusChanged(QAbstractSocket::SocketState status, QString const& hostname="", quint16 const& port=0, QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket);
+		void hostChanged(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
 		void dataTpvChanged(GpsdClient::DataTpv const& data);
+		void connectionStateChanged(bool connected);
 		
 	public slots:
 		void stopClient();
@@ -143,7 +148,9 @@ class GpsdClient: public QObject{
 	private slots:
 		void validateUdpLink();
 		void linkValidated();
+		void socketRetry();
 		void socketFailure();
+		void socketError(QAbstractSocket::SocketError error) const;
 		void incomingData();
 		void signalSocketStateChanged();
 		
@@ -182,7 +189,7 @@ class GpsdClient: public QObject{
 		bool m_manuallyStopped;
 		int m_indexConnectingHost; // to browse m_hosts
 		QAbstractSocket* m_socket; // never reused
-		bool m_socketValidated; // true when UDP seen answer
+		bool m_socketValidated; // true when UDP seen answer or TCP connected
 		QTimer* m_requestTimer;
 		QByteArray m_bufferIn;
 		uint m_expectedAnswers;
@@ -192,7 +199,7 @@ class GpsdClient: public QObject{
 		QFile* m_outputJavascript;
 		QFile* m_outputJson;
 		// Static:
-		static QString const s_titleGpsdClient;
+		static QString s_titleGpsdClient;
 		static QLinkedList<GpsdClient*> s_gpsdClients;
 		static QByteArray const s_requestContentTpv;
 		static QByteArray const s_requestContentVersion;

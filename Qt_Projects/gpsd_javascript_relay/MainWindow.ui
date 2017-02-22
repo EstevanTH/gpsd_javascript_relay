@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">GPSD to JavaScript relay 0.9</string>
+   <string notr="true">GPSD to JavaScript relay 0.9.1</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

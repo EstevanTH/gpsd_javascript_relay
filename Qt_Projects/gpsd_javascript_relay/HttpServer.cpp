@@ -95,7 +95,7 @@ void HttpServer::startServer(){
 			QMessageBox::critical(
 				qobject_cast<QWidget*>( this->parent() ),
 				tr( "HTTP server" ),
-				tr( "The HTTP server could not start:\n" )+m_tcpServer->errorString(),
+				tr( "The HTTP server could not start:<br/>" )+m_tcpServer->errorString(),
 				QMessageBox::Close,
 				QMessageBox::Close
 			);
