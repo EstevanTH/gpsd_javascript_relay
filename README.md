@@ -38,6 +38,7 @@ If you use the program for a long period of time, you'll love it.
 - `--confignosave` - do not save configuration on exit
 - `--minimized` - minimize in tray on startup
 - `--noautostart` - do not auto-start HTTP server and GPSD clients
+- `--traynomessages` - disable messages from tray icon
 
 #### Customizable refresh rate
 Because we do not have the same needs and the same GPSD server!
