@@ -45,7 +45,7 @@ Because we do not have the same needs and the same GPSD server!
 
 In addition, the program adds the field `relaytime` (milliseconds timestamp) in JSON and JS objects when a GPSD response is received.
 #### Support for GPSD servers through TCP, UDP and symmetric UDP
-For a maximum compatibility and the largest choose, support is provided for all common protocols!
+For a maximum compatibility and the largest choice, support is provided for all common protocols!
 #### Support for IPv6 and IPv4
 This program has full IPv6 compatibility thanks to Qt!
 
