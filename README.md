@@ -20,7 +20,7 @@ This project uses [the Qt framework](http://doc.qt.io/qt-5/), which provides an 
 
 ## Features
 #### Built-in mini HTTP server
-The easiest way to use some AJAX is with an HTTP server, with the lowest possible delay!
+That is the easiest way to use some AJAX is with an HTTP server, with the lowest possible delay!
 #### Connection to multiple GPSD servers
 If you have several GPS devices, I thought about you!
 #### Multiple hosts for a single GPSD server
