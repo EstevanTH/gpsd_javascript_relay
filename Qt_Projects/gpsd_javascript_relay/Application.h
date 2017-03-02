@@ -26,6 +26,7 @@ Only 1 instance can be created, so attributes and most methods are static.
 #include <QSharedMemory>
 #include <QDateTime>
 #include <QTimer>
+#include <QLocale>
 class GpsdClient;
 
 class Application: public QApplication{
@@ -53,6 +54,8 @@ class Application: public QApplication{
 		static QString const& getAppTitle();
 		static bool isPreventingMultipleInstances();
 		static CommandLineOptions const& getCommandLineOptions();
+		static QString const& getLanguage();
+		static QString const& getVersion();
 		
 	signals:
 		void addedGpsdClient(GpsdClient* gpsdClient);
@@ -65,13 +68,15 @@ class Application: public QApplication{
 		void singleInstanceCheck();
 		
 	private:
+		static QString const s_version;
+		static QString const s_appTitle;
 		static QSettings* s_appSettings;
 		static Application* s_instance;
 		static QSharedMemory* s_singleInstanceHandler;
 		static QTimer* s_singleInstanceChecker;
 		static bool s_preventingMultipleInstances;
 		static CommandLineOptions s_commandLineOptions;
-		static QString const s_appTitle;
+		static QString s_language;
 };
 
 #endif // APPLICATION_H

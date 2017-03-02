@@ -12,6 +12,7 @@ It handles most of the startup work as well.
 #include <QCloseEvent>
 #include <QMenu>
 #include <QStringList>
+#include <QSessionManager>
 #include "ui_MainWindow.h"
 #include "HttpServer.h"
 #include "GpsdTabSetupWidget.h"
@@ -40,6 +41,7 @@ class MainWindow:
 	protected:
 		void minimizeInTray();
 		void saveSettings();
+		void makeAppIcon(QIcon const* &icon, QColor color);
 		void closeEvent(QCloseEvent *event);
 		
 	private slots:
@@ -50,13 +52,21 @@ class MainWindow:
 		GpsdClient* makeNewGpsdClient();
 		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 		void gpsdConnectionStateChanged(bool connected);
+		void updateTrayIconColor();
+		void prepareLogout(QSessionManager& manager);
 		
 	private:
 		bool m_httpSetupChanged;
 		QPushButton* m_btnGpsdNewTab;
 		QSystemTrayIcon* m_trayIcon;
+		bool m_loggingOut;
 		static QString s_messageConnected;
 		static QString s_messageConnectionLost;
+		static QPixmap const* s_appIconDefault; // only used as a base
+		static QIcon const* s_appIconStopped;
+		static QIcon const* s_appIconConnecting;
+		static QIcon const* s_appIconConnected;
+		static QIcon const* s_appIconUnconnected;
 };
 
 #endif // MAINWINDOW_H

@@ -3,7 +3,8 @@
 MainWindow::MainWindow(QWidget *parent):
 	QWidget( parent ),
 	m_httpSetupChanged( false ),
-	m_trayIcon( 0 )
+	m_trayIcon( 0 ),
+	m_loggingOut( false )
 {
 	// Translation:
 	if( s_messageConnected.isEmpty() ) s_messageConnected = tr( "Connection established" );
@@ -11,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent):
 	
 	// Main interface:
 	setupUi( this );
+	setWindowTitle( Application::getAppTitle()+' '+Application::getVersion() );
+	m_gBuild->setText( Application::getVersion()+QString( " (" )+QString::number( sizeof( void* )<<3 )+tr( "-bit)" ) );
 	m_btnGpsdNewTab = new QPushButton( m_gSourcesTabs );
 		m_btnGpsdNewTab->setText( "" );
 		m_btnGpsdNewTab->setIcon( QIcon( ":/icon16_add.png" ) );
@@ -23,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent):
 	connect( m_btnSources, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
 	connect( m_btnTargets, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
 	connect( m_btnAbout, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
+	QGuiApplication::setFallbackSessionManagementEnabled( false ); // logout handling
+	connect( App, SIGNAL( commitDataRequest(QSessionManager) ), SLOT( prepareLogout(QSessionManager) ) ); // logout handling
 	
 	// Load configuration:
 	QJsonObject settings = Application::getAppSettings();
@@ -101,6 +106,7 @@ void MainWindow::addedGpsdClient(GpsdClient* gpsdClient){
 	targets->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
 	setup->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
 	connect( gpsdClient, SIGNAL( connectionStateChanged(bool) ), this, SLOT( gpsdConnectionStateChanged(bool) ) );
+	connect( gpsdClient, SIGNAL( statusChanged(QAbstractSocket::SocketState, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( updateTrayIconColor() ) );
 }
 void MainWindow::removedGpsdClient(GpsdClient* gpsdClient){
 	GpsdTabSetupWidget* setup;
@@ -151,8 +157,9 @@ void MainWindow::minimizeInTray(){
 				connect( contextMenu->addAction( tr( "&Restore" ) ), SIGNAL( triggered() ), this, SLOT( restoredMinimizedInTray() ) );
 				connect( contextMenu->addAction( tr( "&Quit" ) ), SIGNAL( triggered() ), this, SLOT( closeWindow() ) );
 			m_trayIcon->setContextMenu( contextMenu );
-			m_trayIcon->setIcon( this->windowIcon() );
 			m_trayIcon->setToolTip( Application::getAppTitle() );
+			m_trayIcon->setIcon( this->windowIcon() );
+			updateTrayIconColor();
 		}
 		m_trayIcon->show();
 		this->hide();
@@ -218,27 +225,40 @@ void MainWindow::saveSettings(){
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
-	QMessageBox msgQuitOrMinimize;
-		msgQuitOrMinimize.setText( tr( "Do you want to quit or minimize in tray?" ) );
-		QPushButton* btnQuit = msgQuitOrMinimize.addButton( tr( "&Quit" ), QMessageBox::YesRole );
-		QPushButton* btnMinimize = msgQuitOrMinimize.addButton( tr( "&Minimize in tray" ), QMessageBox::NoRole );
-		QPushButton* btnCancel = msgQuitOrMinimize.addButton( QMessageBox::Cancel );
-		msgQuitOrMinimize.setDefaultButton( btnMinimize );
-		msgQuitOrMinimize.setEscapeButton( btnCancel );
-		msgQuitOrMinimize.setWindowModality( Qt::WindowModal );
-	msgQuitOrMinimize.exec();
-	if( msgQuitOrMinimize.clickedButton()==btnQuit ){
-		// m_quitRequested = true;
+	if( m_loggingOut ){ // user is logging out
+		// Already saved: just quit
+		event->accept();
+	}
+	else if( !isVisible() ){ // minimized in tray
+		// Quit without message
 		saveSettings();
 		event->accept();
 	}
-	else if( msgQuitOrMinimize.clickedButton()==btnMinimize ){
-		// m_quitRequested = false;
-		minimizeInTray();
-		event->ignore();
-	}
 	else{
-		event->ignore();
+		// Show message
+		QMessageBox msgQuitOrMinimize;
+			msgQuitOrMinimize.setText( tr( "Do you want to quit or minimize in tray?" ) );
+			QPushButton* btnQuit = msgQuitOrMinimize.addButton( tr( "&Quit" ), QMessageBox::YesRole );
+			QPushButton* btnMinimize = msgQuitOrMinimize.addButton( tr( "&Minimize in tray" ), QMessageBox::NoRole );
+			QPushButton* btnCancel = msgQuitOrMinimize.addButton( QMessageBox::Cancel );
+			msgQuitOrMinimize.setDefaultButton( btnMinimize );
+			msgQuitOrMinimize.setEscapeButton( btnCancel );
+			msgQuitOrMinimize.setWindowModality( Qt::WindowModal );
+		msgQuitOrMinimize.exec();
+		if( msgQuitOrMinimize.clickedButton()==btnQuit ){
+			// Quit
+			saveSettings();
+			event->accept();
+		}
+		else if( msgQuitOrMinimize.clickedButton()==btnMinimize ){
+			// Minimize in tray
+			minimizeInTray();
+			event->ignore();
+		}
+		else{
+			// Cancel
+			event->ignore();
+		}
 	}
 }
 
@@ -349,4 +369,81 @@ void MainWindow::gpsdConnectionStateChanged(bool connected){
 			);
 		}
 	}
+}
+
+QPixmap const* MainWindow::s_appIconDefault = 0;
+QIcon const* MainWindow::s_appIconStopped = 0;
+QIcon const* MainWindow::s_appIconConnecting = 0;
+QIcon const* MainWindow::s_appIconConnected = 0;
+QIcon const* MainWindow::s_appIconUnconnected = 0;
+
+void MainWindow::makeAppIcon(QIcon const* &icon, QColor color){
+	// The design ensures that there is no memory leak.
+	if( !s_appIconDefault ){
+		s_appIconDefault = new QPixmap( ":/gpsd_javascript_relay_32.png" );
+	}
+	if( icon ){
+		delete icon;
+		icon = 0;
+	}
+	QImage image = s_appIconDefault->toImage();
+	for( int x=0; x<=31; ++x ){
+		for( int y=14; y<=17; ++y ){
+			image.setPixelColor( x, y, color );
+		}
+	}
+	icon = new QIcon( QPixmap::fromImage( image ) );
+}
+
+void MainWindow::updateTrayIconColor(){
+	// This slot is called when the tray icon is created and whenever a GPSD client update its status.
+	// Only the first GPSD client affects the color of the tray icon.
+	// The MainWindow icon is changed, then the tray icon is updated if it exists.
+	// This will only work properly with the default 32x32 icon.
+	
+	GpsdClient const* gpsdClientSender = qobject_cast<GpsdClient const*>( sender() );
+	GpsdClient const* gpsdClient = 0;
+	
+	QLayoutItem* item = m_gGpsdClientMonitorsLayout->itemAt( 0 );
+	if( item ){
+		GpsdStatusWidget const* monitor = qobject_cast<GpsdStatusWidget const*>( item->widget() );
+		if( monitor ){
+			gpsdClient = monitor->getGpsdClient();
+		}
+	}
+	
+	if( gpsdClient && ( !gpsdClientSender || gpsdClient==gpsdClientSender ) ){ // only 1st GPSD client
+		QIcon const* icon;
+		if( gpsdClient->isManuallyStopped() ){
+			if( !s_appIconStopped ) makeAppIcon( s_appIconStopped, "#FF0000" );
+			icon = s_appIconStopped;
+		}
+		else{
+			QAbstractSocket::SocketState status = gpsdClient->getConnectionStatus();
+			switch( status ){
+				case QAbstractSocket::HostLookupState:
+				case QAbstractSocket::ConnectingState:
+					if( !s_appIconConnecting ) makeAppIcon( s_appIconConnecting, "#FFC000" );
+					icon = s_appIconConnecting;
+				break;
+				case QAbstractSocket::ConnectedState:
+					if( !s_appIconConnected ) makeAppIcon( s_appIconConnected, "#00FF00" );
+					icon = s_appIconConnected;
+				break;
+				default:
+					if( !s_appIconUnconnected ) makeAppIcon( s_appIconUnconnected, "#FF00FF" );
+					icon = s_appIconUnconnected;
+			}
+		}
+		if( icon ){
+			App->setWindowIcon( *icon );
+			if( m_trayIcon ) m_trayIcon->setIcon( *icon );
+		}
+	}
+}
+
+void MainWindow::prepareLogout(QSessionManager& manager){ // logout handling
+	m_loggingOut = true;
+	manager.release();
+	saveSettings();
 }

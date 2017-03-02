@@ -5,11 +5,11 @@ GpsdStatusWidget::GpsdStatusWidget(GpsdClient* gpsdClient, QWidget *parent):
 	m_gpsdClient( gpsdClient )
 {
 	// Translation:
-	if( s_statusTextStopped.isEmpty() ) s_statusTextStopped = QString( "<span style='color:red;'>" )+tr( "Stopped" )+QString( "</span>" );
-	if( s_statusTextHostLookup.isEmpty() ) s_statusTextHostLookup = QString( "<span style='color:orange;'>" )+tr( "Resolving" )+QString( "</span>" );
-	if( s_statusTextConnecting.isEmpty() ) s_statusTextConnecting = QString( "<span style='color:orange;'>" )+tr( "Connecting" )+QString( "</span>" );
-	if( s_statusTextConnected.isEmpty() ) s_statusTextConnected = QString( "<span style='color:green;'>" )+tr( "Connected" )+QString( "</span>" );
-	if( s_statusTextUnconnected.isEmpty() ) s_statusTextUnconnected = QString( "<span style='color:fuchsia;'>" )+tr( "Unconnected" )+QString( "</span>" );
+	if( s_statusTextStopped.isEmpty() ) s_statusTextStopped = QString( "<span style='color:#FF0000;'>" )+tr( "Stopped" )+QString( "</span>" );
+	if( s_statusTextHostLookup.isEmpty() ) s_statusTextHostLookup = QString( "<span style='color:#FFC000;'>" )+tr( "Resolving" )+QString( "</span>" );
+	if( s_statusTextConnecting.isEmpty() ) s_statusTextConnecting = QString( "<span style='color:#FFC000;'>" )+tr( "Connecting" )+QString( "</span>" );
+	if( s_statusTextConnected.isEmpty() ) s_statusTextConnected = QString( "<span style='color:#00FF00;'>" )+tr( "Connected" )+QString( "</span>" );
+	if( s_statusTextUnconnected.isEmpty() ) s_statusTextUnconnected = QString( "<span style='color:#FF00FF;'>" )+tr( "Unconnected" )+QString( "</span>" );
 	
 	// Initialization:
 	setupUi( this );

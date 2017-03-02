@@ -235,88 +235,88 @@ UDP symétrique : UDP avec port local = port distant</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="MainWindow.ui" line="47"/>
+        <location filename="MainWindow.ui" line="44"/>
         <source>&amp;Status</source>
         <translation>&amp;Statut</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="66"/>
+        <location filename="MainWindow.ui" line="63"/>
         <source>GPSD
 Se&amp;rvers</source>
         <translation>Se&amp;rveurs
 GPSD</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="83"/>
+        <location filename="MainWindow.ui" line="80"/>
         <source>&amp;Targets</source>
         <translation>Des&amp;tinations</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="99"/>
+        <location filename="MainWindow.ui" line="96"/>
         <source>Ab&amp;out</source>
         <translation>À pr&amp;opos</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="149"/>
-        <location filename="MainWindow.ui" line="315"/>
+        <location filename="MainWindow.ui" line="146"/>
+        <location filename="MainWindow.ui" line="312"/>
         <source>HTTP server</source>
         <translation>Serveur HTTP</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="170"/>
+        <location filename="MainWindow.ui" line="167"/>
         <source>Status:</source>
         <translation>Statut :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="180"/>
-        <location filename="MainWindow.ui" line="321"/>
+        <location filename="MainWindow.ui" line="177"/>
+        <location filename="MainWindow.ui" line="318"/>
         <source>IP address:</source>
         <translation>Adresse IP :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="190"/>
-        <location filename="MainWindow.ui" line="338"/>
+        <location filename="MainWindow.ui" line="187"/>
+        <location filename="MainWindow.ui" line="335"/>
         <source>Port:</source>
         <translation>Port :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="200"/>
+        <location filename="MainWindow.ui" line="197"/>
         <source>Requests:</source>
         <translation>Requêtes :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="228"/>
+        <location filename="MainWindow.ui" line="225"/>
         <source>Start HTTP server</source>
         <translation>Démarrer serveur HTTP</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="231"/>
+        <location filename="MainWindow.ui" line="228"/>
         <source>Start server</source>
         <translation>Démarrer serveur</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="238"/>
+        <location filename="MainWindow.ui" line="235"/>
         <source>Stop HTTP server</source>
         <translation>Arrêter serveur HTTP</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="241"/>
+        <location filename="MainWindow.ui" line="238"/>
         <source>Stop server</source>
         <translation>Arrêter serveur</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="254"/>
+        <location filename="MainWindow.ui" line="251"/>
         <source>GPSD clients</source>
         <translation>Clients GPSD</translation>
     </message>
     <message>
+        <location filename="MainWindow.ui" line="325"/>
         <location filename="MainWindow.ui" line="328"/>
-        <location filename="MainWindow.ui" line="331"/>
         <source>Interface IP address or &quot;local&quot; or &quot;local6&quot; or &quot;any&quot; (default)</source>
         <translation>Adresse IP d&apos;interface ou &quot;local&quot; ou &quot;local6&quot; ou &quot;any&quot; (par défaut)</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="345"/>
+        <location filename="MainWindow.ui" line="342"/>
         <source>Default value: 42317
 = gpsd_javascript_relay % (65535-1024) + 1024
 = 4773528272747873529 % 64511 + 1024</source>
@@ -325,49 +325,54 @@ GPSD</translation>
 = 4773528272747873529 % 64511 + 1024</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="366"/>
+        <location filename="MainWindow.ui" line="363"/>
         <source>Auto start:</source>
         <translation>Démarrage auto :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="373"/>
+        <location filename="MainWindow.ui" line="370"/>
         <source>Automatically start HTTP server</source>
         <translation>Démarrer automatiquement le serveur HTTP</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="386"/>
+        <location filename="MainWindow.ui" line="383"/>
         <source>JavaScript and JSON targets</source>
         <translation>Destinations JavaScript et JSON</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="413"/>
+        <location filename="MainWindow.ui" line="410"/>
         <source>Author:</source>
         <translation>Auteur :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="430"/>
+        <location filename="MainWindow.ui" line="427"/>
         <source>IDE:</source>
         <translation>IDE :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="447"/>
+        <location filename="MainWindow.ui" line="444"/>
         <source>Tested servers:</source>
         <translation>Serveurs testés :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="464"/>
+        <location filename="MainWindow.ui" line="461"/>
         <source>License:</source>
         <translation>Licence :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="481"/>
+        <location filename="MainWindow.ui" line="478"/>
         <source>Documentation:</source>
         <translation>Documentation :</translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="502"/>
+        <location filename="MainWindow.ui" line="499"/>
         <source>A small tool producing JS &amp; JSON output based on GPS data provided by a GPSD server</source>
         <translation>Petit outil produisant une sortie JS &amp; JSON basée sur des données GPS fournies par un serveur GPSD</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="516"/>
+        <source>Version:</source>
+        <translation>Version :</translation>
     </message>
     <message>
         <location filename="MainWindow.cpp" line="9"/>
@@ -380,48 +385,53 @@ GPSD</translation>
         <translation>Connexion perdue</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="17"/>
+        <location filename="MainWindow.cpp" line="15"/>
+        <source>-bit)</source>
+        <translation> bits)</translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="19"/>
         <source>Add a GPSD server</source>
         <translation>Ajouter un serveur GPSD</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="151"/>
+        <location filename="MainWindow.cpp" line="154"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restaurer</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="152"/>
-        <location filename="MainWindow.cpp" line="223"/>
+        <location filename="MainWindow.cpp" line="155"/>
+        <location filename="MainWindow.cpp" line="228"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="222"/>
+        <location filename="MainWindow.cpp" line="227"/>
         <source>Do you want to quit or minimize in tray?</source>
         <translation>Voulez-vous quitter ou minimiser dans la zone de notification ?</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="224"/>
+        <location filename="MainWindow.cpp" line="229"/>
         <source>&amp;Minimize in tray</source>
         <translation>&amp;Minimiser dans la zone de notification</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="296"/>
+        <location filename="MainWindow.cpp" line="308"/>
         <source>Running</source>
         <translation>Démarré</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="298"/>
+        <location filename="MainWindow.cpp" line="310"/>
         <source>Stopped</source>
         <translation>Arrêté</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="340"/>
+        <location filename="MainWindow.cpp" line="352"/>
         <source>GPSD client &quot;</source>
         <translation>Client GPSD &quot;</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="340"/>
+        <location filename="MainWindow.cpp" line="352"/>
         <source>&quot;</source>
         <translation>&quot;</translation>
     </message>

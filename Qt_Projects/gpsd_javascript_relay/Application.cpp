@@ -1,5 +1,7 @@
 #include "Application.h"
 
+QString const Application::s_version = "0.9.2";
+QString const Application::s_appTitle = "GPSD to JavaScript relay";
 QSettings* Application::s_appSettings = 0;
 Application* Application::s_instance = 0;
 QSharedMemory* Application::s_singleInstanceHandler = 0;
@@ -12,22 +14,29 @@ Application::CommandLineOptions Application::s_commandLineOptions = {
 	false,
 	false,
 };
-QString const Application::s_appTitle = "GPSD to JavaScript relay";
+QString Application::s_language = QLocale::system().name().section( '_', 0,0 );
 
 Application::Application(int &argc, char **argv):
 	QApplication( argc, argv )
 {
 	s_instance = this;
 	setWindowIcon( QIcon( ":/gpsd_javascript_relay_32.png" ) );
+	
 	// Load command-line arguments:
 	QStringList args = QCoreApplication::arguments();
-	for( QStringList::const_iterator str=args.begin(); str!=args.end(); ++str ){
-		QString str_lower = str->toLower();
+	for( int i=0; i<args.size(); ++i ){
+		QString const str = args[i];
+		QString str_lower = str.toLower();
 		if( str_lower=="--confignoload" ){
 			s_commandLineOptions.confignoload = true;
 		}
 		else if( str_lower=="--confignosave" ){
 			s_commandLineOptions.confignosave = true;
+		}
+		else if( str_lower=="--language" ){
+			if( ( i+1 )<args.size() && args[i+1].size()==2 ){
+				s_language = args[++i].toLower();
+			}
 		}
 		else if( str_lower=="--minimized" ){
 			s_commandLineOptions.minimized = true;
@@ -39,6 +48,7 @@ Application::Application(int &argc, char **argv):
 			s_commandLineOptions.traynomessages = true;
 		}
 	}
+	
 	// Prepare for application settings:
 	if( !s_appSettings ){
 		s_appSettings = new QSettings(
@@ -49,6 +59,7 @@ Application::Application(int &argc, char **argv):
 			this
 		);
 	}
+	
 	// Prepare for single instance (shared memory):
 	if( !s_singleInstanceHandler ){
 		s_singleInstanceHandler = new QSharedMemory( s_appTitle );
@@ -83,6 +94,7 @@ Application::Application(int &argc, char **argv):
 			s_singleInstanceHandler = 0;
 		}
 	}
+	
 	// Prepare for single instance (timer):
 	if( !s_singleInstanceChecker ){
 		s_singleInstanceChecker = new QTimer();
@@ -149,6 +161,14 @@ bool Application::isPreventingMultipleInstances(){
 
 Application::CommandLineOptions const& Application::getCommandLineOptions(){
 	return s_commandLineOptions;
+}
+
+QString const& Application::getLanguage(){
+	return s_language;
+}
+
+QString const& Application::getVersion(){
+	return s_version;
 }
 
 void Application::singleInstanceCheck(){
