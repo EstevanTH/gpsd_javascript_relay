@@ -23,20 +23,16 @@ Only 1 instance can be created, so attributes and most methods are static.
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QFile>
-#include <QSharedMemory>
 #include <QDateTime>
 #include <QTimer>
 #include <QLocale>
+#include "SingleInstanceData.h"
 class GpsdClient;
 
 class Application: public QApplication{
 	Q_OBJECT
 		
 	public:
-		struct SingleInstanceData{
-			qint64 lastRefresh;
-			bool newInstanceSignaled;
-		};
 		typedef struct CommandLineOptions{
 			bool confignoload;
 			bool confignosave;
@@ -52,6 +48,7 @@ class Application: public QApplication{
 		static bool setAppSettings(QJsonObject const& settings);
 		static Application* instance();
 		static QString const& getAppTitle();
+		static void flagPreventingMultipleInstances();
 		static bool isPreventingMultipleInstances();
 		static CommandLineOptions const& getCommandLineOptions();
 		static QString const& getLanguage();
@@ -72,7 +69,6 @@ class Application: public QApplication{
 		static QString const s_appTitle;
 		static QSettings* s_appSettings;
 		static Application* s_instance;
-		static QSharedMemory* s_singleInstanceHandler;
 		static QTimer* s_singleInstanceChecker;
 		static bool s_preventingMultipleInstances;
 		static CommandLineOptions s_commandLineOptions;

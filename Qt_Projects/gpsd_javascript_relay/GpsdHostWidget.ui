@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>332</width>
-    <height>24</height>
+    <width>640</width>
+    <height>240</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,7 +16,7 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="m_gLines">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -30,65 +30,225 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QLineEdit" name="m_gHostName">
-     <property name="toolTip">
-      <string>IP address / Hostname</string>
-     </property>
-     <property name="placeholderText">
-      <string>IP address / Hostname</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QSpinBox" name="m_gPort">
-     <property name="toolTip">
-      <string>Port number</string>
-     </property>
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="maximum">
-      <number>65535</number>
-     </property>
-     <property name="value">
-      <number>2947</number>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QComboBox" name="m_gProtocol">
-     <property name="toolTip">
-      <string>Protocol
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="m_gConnectionMethod">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Connection method</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>IP link</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Serial port</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="m_gHostName">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="m_gPort">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Port number</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>2947</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="m_gProtocol">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Protocol
 TCP: Heavy but reliable &amp; guaranteed order
 UDP: Light but unreliable &amp; unknown order
 Symmetric UDP: UDP with local port = remote port</string>
-     </property>
-     <item>
-      <property name="text">
-       <string>TCP</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>UDP</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Symmetric UDP</string>
-      </property>
-     </item>
+        </property>
+        <item>
+         <property name="text">
+          <string>TCP</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>UDP</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Symmetric UDP</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_btnConfigure">
+        <property name="toolTip">
+         <string>Configure connection</string>
+        </property>
+        <property name="text">
+         <string>Configure</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_btnRemove">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Remove this host</string>
+        </property>
+        <property name="icon">
+         <iconset resource="gpsd_javascript_relay.qrc">
+          <normaloff>:/icon16_remove.png</normaloff>:/icon16_remove.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="m_btnRemove">
-     <property name="toolTip">
-      <string>Remove this host</string>
+    <widget class="QFrame" name="m_gAreaRS232">
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
      </property>
-     <property name="icon">
-      <iconset resource="gpsd_javascript_relay.qrc">
-       <normaloff>:/icon16_remove.png</normaloff>:/icon16_remove.png</iconset>
-     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0" colspan="3">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Except &lt;i&gt;Low latency&lt;/i&gt;, port parameters only apply to physical serial ports. Logical ports such as Bluetooth serial ports usually ignore them.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QComboBox" name="m_gSerialBaudRate">
+        <property name="toolTip">
+         <string>Data baud rate</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QComboBox" name="m_gSerialParity">
+        <property name="toolTip">
+         <string>Parity checking mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="m_gSerialStopBits">
+        <property name="toolTip">
+         <string>Number of stop bits in a frame</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCheckBox" name="m_gSerialLowLatency">
+        <property name="toolTip">
+         <string>Flush write buffer without waiting for the event loop</string>
+        </property>
+        <property name="text">
+         <string>Low latency</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QComboBox" name="m_gSerialPortsList">
+        <property name="toolTip">
+         <string>Serial port</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="m_gSerialFlowControl">
+        <property name="toolTip">
+         <string>Flow control mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="m_gSerialDataBits">
+        <property name="toolTip">
+         <string>Data bits in a frame</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" rowspan="4">
+       <widget class="QPushButton" name="m_btnSerialOk">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string notr="true">OK</string>
+        </property>
+        <property name="icon">
+         <iconset resource="gpsd_javascript_relay.qrc">
+          <normaloff>:/icon32_ok.png</normaloff>:/icon32_ok.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

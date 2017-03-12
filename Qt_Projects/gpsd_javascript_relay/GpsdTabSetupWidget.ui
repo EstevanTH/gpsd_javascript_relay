@@ -24,7 +24,7 @@
       <string>Custom name</string>
      </property>
      <property name="placeholderText">
-      <string>Enter a short custom name</string>
+      <string>Short custom name</string>
      </property>
     </widget>
    </item>
@@ -97,23 +97,13 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Hosts:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
+   <item row="4" column="0" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>100</verstretch>
       </sizepolicy>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::AdjustToContents</enum>
@@ -129,7 +119,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>408</width>
+        <width>492</width>
         <height>274</height>
        </rect>
       </property>

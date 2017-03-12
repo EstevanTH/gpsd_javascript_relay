@@ -25,7 +25,7 @@ class GpsdStatusWidget:
 		
 	private slots:
 		void statusChanged(QAbstractSocket::SocketState status) const;
-		void hostChanged(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
+		void hostChanged(int connectionMethod, QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
 		void dataTpvChanged(GpsdClient::DataTpv const& data) const;
 		void socketException(const char* description) const;
 		

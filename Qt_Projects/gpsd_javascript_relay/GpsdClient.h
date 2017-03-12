@@ -11,6 +11,7 @@ The socket is never re-used.
 #include <QLinkedList>
 #include <QUdpSocket>
 #include <QTcpSocket>
+#include <QSerialPort>
 #include <QMessageBox>
 #include <QTimer>
 #include <QJsonDocument>
@@ -23,9 +24,11 @@ The socket is never re-used.
 
 // #include <QtDebug> // debug
 
+// These macros are used for UDP links as well as serial connections:
 #define GPSD_EXPIRE_UDP_CONNECT 5000 // ms after sending the first ?VERSION; request
 #define GPSD_RETRY_UDP_DELAY 1000 // ms between ?VERSION; requests to confirm link
 #define GPSD_EXPIRE_UDP_DATA 30000 // ms, m_lastAnswer-m_lastRequest with m_expectedAnswers>1 (when confirmed link)
+
 #define GPSD_SOCKET_FAILURE_WAIT 1000
 
 #define GPSD_RECEIVE_BUFFER 16384 // poor performance if big and full
@@ -108,7 +111,19 @@ class GpsdClient: public QObject{
 		void setName(QString const& name);
 		void setRefreshRate(double refreshRate);
 		void setAutoReconnect(bool autoReconnect);
-		GpsdHost* addHost(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol, bool symmetric=false);
+		GpsdHost* addHost(
+			QString const& hostname,
+			quint16 const& port,
+			QAbstractSocket::SocketType const& protocol,
+			bool symmetric=false,
+			int connectionMethod=0,
+			qint32 serialBaudRate=-1,
+			int serialDataBits=-1,
+			int serialFlowControl=-1,
+			int serialParity=-1,
+			int serialStopBits=-1,
+			bool serialLowLatency=true
+		);
 		void removeHost(GpsdHost* host);
 		void clearHosts();
 		void setHttpEnabled(bool httpEnabled);
@@ -134,8 +149,8 @@ class GpsdClient: public QObject{
 		
 	signals:
 		void nameChanged(QString const& name);
-		void statusChanged(QAbstractSocket::SocketState status, QString const& hostname="", quint16 const& port=0, QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket);
-		void hostChanged(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
+		void statusChanged(QAbstractSocket::SocketState status, int connectionMethod=0, QString const& hostname="", quint16 const& port=0, QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket);
+		void hostChanged(int connectionMethod, QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol);
 		void dataTpvChanged(GpsdClient::DataTpv const& data);
 		void connectionStateChanged(bool connected);
 		
@@ -151,6 +166,7 @@ class GpsdClient: public QObject{
 		void socketRetry();
 		void socketFailure();
 		void socketError(QAbstractSocket::SocketError error) const;
+		void socketError(QSerialPort::SerialPortError error) const;
 		void incomingData();
 		void signalSocketStateChanged();
 		
@@ -188,8 +204,9 @@ class GpsdClient: public QObject{
 		void connectToHost(GpsdHost const& host);
 		bool m_manuallyStopped;
 		int m_indexConnectingHost; // to browse m_hosts
-		QAbstractSocket* m_socket; // never reused
-		bool m_socketValidated; // true when UDP seen answer or TCP connected
+		QIODevice* m_socket; // socket, never reused
+		bool m_serialLowLatency;
+		bool m_socketValidated; // true when: UDP seen answer / serial seen answer / TCP connected
 		QTimer* m_requestTimer;
 		QByteArray m_bufferIn;
 		uint m_expectedAnswers;

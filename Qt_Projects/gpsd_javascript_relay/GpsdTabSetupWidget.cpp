@@ -8,9 +8,11 @@
 		break; \
 		case 1: \
 			protocol = QAbstractSocket::UdpSocket; \
+			symmetric = false; \
 		break; \
 		default: \
 			protocol = QAbstractSocket::TcpSocket; \
+			symmetric = false; \
 	}
 
 GpsdTabSetupWidget::GpsdTabSetupWidget(GpsdClient* gpsdClient, QTabWidget* sourcesTabs, QWidget *parent):
@@ -50,22 +52,52 @@ void GpsdTabSetupWidget::updateTabText(QString const& text){
 }
 
 GpsdHostWidget* GpsdTabSetupWidget::addHost(){
-	GpsdHostWidget* host = new GpsdHostWidget( this );
+	GpsdHostWidget* const host = new GpsdHostWidget( this );
+	connect( host->m_gConnectionMethod, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
 	connect( host->m_gHostName, SIGNAL( textChanged(const QString&) ), this, SLOT( flagHasChanged() ) );
 	connect( host->m_gPort, SIGNAL( valueChanged(int) ), this, SLOT( flagHasChanged() ) );
 	connect( host->m_gProtocol, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
 	connect( host->m_btnRemove, SIGNAL( clicked() ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialBaudRate, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialDataBits, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialFlowControl, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialParity, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialPortsList, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialStopBits, SIGNAL( currentIndexChanged(int) ), this, SLOT( flagHasChanged() ) );
+	connect( host->m_gSerialLowLatency, SIGNAL( stateChanged(int) ), this, SLOT( flagHasChanged() ) );
 	m_gHostList->addWidget( host );
 	return host;
 }
-GpsdHostWidget* GpsdTabSetupWidget::addHost(QString const& hostName, quint16 const& port, QAbstractSocket::SocketType const& protocol, bool symmetric){
-	GpsdHostWidget* host = addHost();
+GpsdHostWidget* GpsdTabSetupWidget::addHost(
+	QString const& hostName,
+	quint16 const& port,
+	QAbstractSocket::SocketType const& protocol,
+	bool symmetric,
+	int connectionMethod,
+	qint32 serialBaudRate,
+	int serialDataBits,
+	int serialFlowControl,
+	int serialParity,
+	int serialStopBits,
+	bool serialLowLatency
+){
+	GpsdHostWidget* const host = addHost();
+	host->m_gConnectionMethod->setCurrentIndex( connectionMethod );
 	host->m_gHostName->setText( hostName );
 	host->m_gPort->setValue( port );
 	if( protocol==QAbstractSocket::UdpSocket ){
 		if( symmetric ) host->m_gProtocol->setCurrentIndex( 2 );
 		else host->m_gProtocol->setCurrentIndex( 1 );
 	}
+	else{
+		host->m_gProtocol->setCurrentIndex( 0 );
+	}
+	host->m_gSerialBaudRate->setCurrentIndex( host->m_gSerialBaudRate->findData( serialBaudRate ) );
+	host->m_gSerialDataBits->setCurrentIndex( host->m_gSerialDataBits->findData( serialDataBits ) );
+	host->m_gSerialFlowControl->setCurrentIndex( host->m_gSerialFlowControl->findData( serialFlowControl ) );
+	host->m_gSerialParity->setCurrentIndex( host->m_gSerialParity->findData( serialParity ) );
+	host->m_gSerialStopBits->setCurrentIndex( host->m_gSerialStopBits->findData( serialStopBits ) );
+	host->m_gSerialLowLatency->setChecked( serialLowLatency );
 	return host;
 }
 void GpsdTabSetupWidget::on_m_btnAddHost_clicked(){
@@ -85,14 +117,21 @@ void GpsdTabSetupWidget::applyConfiguration(){
 				GpsdHostWidget* host = qobject_cast<GpsdHostWidget*>( item->widget() );
 				if( host ){
 					QAbstractSocket::SocketType protocol;
-					bool symmetric = false;
+					bool symmetric;
 					int index = host->m_gProtocol->currentIndex();
 					PROTO_FROM_PROTO_INDEX( protocol, symmetric, index );
 					m_gpsdClient->addHost(
 						host->m_gHostName->text(),
 						host->m_gPort->value(),
 						protocol,
-						symmetric
+						symmetric,
+						host->m_gConnectionMethod->currentIndex(),
+						host->m_gSerialBaudRate->currentData().toInt(),
+						host->m_gSerialDataBits->currentData().toInt(),
+						host->m_gSerialFlowControl->currentData().toInt(),
+						host->m_gSerialParity->currentData().toInt(),
+						host->m_gSerialStopBits->currentData().toInt(),
+						host->m_gSerialLowLatency->isChecked()
 					);
 				}
 			}
@@ -112,13 +151,20 @@ void GpsdTabSetupWidget::getConfiguration(struct GpsdTabSetupWidget::Configurati
 			if( host ){
 				struct ConfigurationHost c_host;
 					QAbstractSocket::SocketType protocol;
-					bool symmetric = false;
+					bool symmetric;
 					int index = host->m_gProtocol->currentIndex();
 					PROTO_FROM_PROTO_INDEX( protocol, symmetric, index );
+					c_host.connectionMethod = host->m_gConnectionMethod->currentIndex();
 					c_host.hostName = host->m_gHostName->text();
 					c_host.port = host->m_gPort->value();
 					c_host.protocol = protocol;
 					c_host.symmetric = symmetric;
+					c_host.serialBaudRate = host->m_gSerialBaudRate->currentData().toInt();
+					c_host.serialDataBits = host->m_gSerialDataBits->currentData().toInt();
+					c_host.serialFlowControl = host->m_gSerialFlowControl->currentData().toInt();
+					c_host.serialParity = host->m_gSerialParity->currentData().toInt();
+					c_host.serialStopBits = host->m_gSerialStopBits->currentData().toInt();
+					c_host.serialLowLatency = host->m_gSerialLowLatency->isChecked();
 				c.hosts.append( c_host );
 			}
 		}
@@ -151,19 +197,37 @@ void GpsdTabSetupWidget::setConfiguration(QJsonObject const& gpsdCSettings){
 		for( QJsonArray::const_iterator hostJson1=hostsJson.begin(); hostJson1!=hostsJson.end(); ++hostJson1 ){
 			QJsonObject hostJson = hostJson1->toObject();
 			quint16 port = 2947;
-			if( hostJson.contains( "port" ) )
-				port = hostJson.value( "port" ).toInt();
+				if( hostJson.contains( "port" ) ) port = hostJson.value( "port" ).toInt();
 			QAbstractSocket::SocketType protocol = QAbstractSocket::TcpSocket;
-			if( hostJson.contains( "protocol" ) )
-				protocol = ( QAbstractSocket::SocketType )hostJson.value( "protocol" ).toInt();
+				if( hostJson.contains( "protocol" ) ) protocol = ( QAbstractSocket::SocketType )hostJson.value( "protocol" ).toInt();
 			bool symmetric = false;
-			if( hostJson.contains( "symmetric" ) )
-				symmetric = hostJson.value( "symmetric" ).toBool();
+				if( hostJson.contains( "symmetric" ) ) symmetric = hostJson.value( "symmetric" ).toBool();
+			int connectionMethod = 0;
+				if( hostJson.contains( "connectionMethod" ) ) connectionMethod = hostJson.value( "connectionMethod" ).toInt();
+			qint32 serialBaudRate = -1;
+				if( hostJson.contains( "serialBaudRate" ) ) serialBaudRate = hostJson.value( "serialBaudRate" ).toInt();
+			int serialDataBits= -1;
+				if( hostJson.contains( "serialDataBits" ) ) serialDataBits = hostJson.value( "serialDataBits" ).toInt();
+			int serialFlowControl = -1;
+				if( hostJson.contains( "serialFlowControl" ) ) serialFlowControl = hostJson.value( "serialFlowControl" ).toInt();
+			int serialParity = -1;
+				if( hostJson.contains( "serialParity" ) ) serialParity = hostJson.value( "serialParity" ).toInt();
+			int serialStopBits = -1;
+				if( hostJson.contains( "serialStopBits" ) ) serialStopBits = hostJson.value( "serialStopBits" ).toInt();
+			bool serialLowLatency = true;
+				if( hostJson.contains( "serialLowLatency" ) ) serialLowLatency = hostJson.value( "serialLowLatency" ).toBool();
 			addHost(
 				hostJson.value( "hostName" ).toString(),
 				port,
 				protocol,
-				symmetric
+				symmetric,
+				connectionMethod,
+				serialBaudRate,
+				serialDataBits,
+				serialFlowControl,
+				serialParity,
+				serialStopBits,
+				serialLowLatency
 			);
 		}
 	}

@@ -17,17 +17,32 @@ class GpsdHost: public QObject{
 	
 	public:
 		explicit GpsdHost(QObject *parent = 0);
-		QString getHostname() const;
-		quint16 getPort() const;
-		QAbstractSocket::SocketType getProtocol() const;
-		bool isSymmetric() const;
-		void modify(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol, bool symmetric=false);
+		void modify(
+			QString const& hostname,
+			quint16 const& port=2947,
+			QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket,
+			bool symmetric=false,
+			int connectionMethod=0,
+			qint32 serialBaudRate=-1,
+			int serialDataBits=-1,
+			int serialFlowControl=-1,
+			int serialParity=-1,
+			int serialStopBits=-1,
+			bool serialLowLatency=true
+		);
 		
 	private:
+		int m_connectionMethod;
 		QString m_hostname;
 		quint16 m_port;
 		QAbstractSocket::SocketType m_protocol;
 		bool m_symmetric;
+		qint32 m_serialBaudRate;
+		int m_serialDataBits; // cast
+		int m_serialFlowControl; // cast
+		int m_serialParity; // cast
+		int m_serialStopBits; // cast
+		bool m_serialLowLatency;
 };
 
 bool operator==(GpsdHost const& a, GpsdHost const& b);

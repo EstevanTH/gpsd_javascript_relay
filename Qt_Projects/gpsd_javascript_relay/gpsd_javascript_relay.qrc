@@ -4,5 +4,6 @@
         <file>icon16_add.png</file>
         <file>icon16_remove.png</file>
         <file>gpsd_javascript_relay_fr.qm</file>
+        <file>icon32_ok.png</file>
     </qresource>
 </RCC>

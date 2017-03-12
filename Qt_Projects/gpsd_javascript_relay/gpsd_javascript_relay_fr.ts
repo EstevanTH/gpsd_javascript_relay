@@ -4,33 +4,33 @@
 <context>
     <name>GpsdClient</name>
     <message>
-        <location filename="GpsdClient.cpp" line="33"/>
+        <location filename="GpsdClient.cpp" line="41"/>
         <source>GPSD client</source>
         <translation>Client GPSD</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="176"/>
+        <location filename="GpsdClient.cpp" line="223"/>
         <source>The GPSD client &lt;b&gt;</source>
         <translation>Le client GPSD &lt;b&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="176"/>
+        <location filename="GpsdClient.cpp" line="223"/>
         <source>&lt;/b&gt; has an empty hosts list!</source>
         <translation>&lt;/b&gt; a une liste d&apos;hôtes vide !</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="190"/>
+        <location filename="GpsdClient.cpp" line="237"/>
         <source>Unable to open JavaScript output file for &lt;b&gt;</source>
         <translation>Impossible d&apos;ouvrir le fichier de sortie JavaScript pour &lt;b&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="190"/>
-        <location filename="GpsdClient.cpp" line="204"/>
+        <location filename="GpsdClient.cpp" line="237"/>
+        <location filename="GpsdClient.cpp" line="251"/>
         <source>&lt;/b&gt;:&lt;br/&gt;</source>
         <translation>&lt;/b&gt; :&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="GpsdClient.cpp" line="204"/>
+        <location filename="GpsdClient.cpp" line="251"/>
         <source>Unable to open JSON output file for &lt;b&gt;</source>
         <translation>Impossible d&apos;ouvrir le fichier de sortie JSON pour &lt;b&gt;</translation>
     </message>
@@ -38,18 +38,90 @@
 <context>
     <name>GpsdHostWidget</name>
     <message>
-        <location filename="GpsdHostWidget.ui" line="35"/>
-        <location filename="GpsdHostWidget.ui" line="38"/>
+        <location filename="GpsdHostWidget.cpp" line="7"/>
+        <source>Default</source>
+        <translation>Par défaut</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="8"/>
         <source>IP address / Hostname</source>
         <translation>Adresse IP / Nom d&apos;hôte</translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="45"/>
+        <location filename="GpsdHostWidget.cpp" line="9"/>
+        <source>Serial port name</source>
+        <translation>Nom du port série</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="39"/>
+        <source>None</source>
+        <translation>Aucun</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="40"/>
+        <source>Hardware (RTS/CTS)</source>
+        <translation>Matériel (RTS/CTS)</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="41"/>
+        <source>Software (XON/XOFF)</source>
+        <translation>Logiciel (XON/XOFF)</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="45"/>
+        <source>None</source>
+        <comment>f</comment>
+        <translation>Aucune</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="46"/>
+        <source>Even</source>
+        <translation>Paire</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="47"/>
+        <source>Odd</source>
+        <translation>Impaire</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="48"/>
+        <source>Space</source>
+        <translation>Espace</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="49"/>
+        <source>Mark</source>
+        <translation>Marque</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.cpp" line="70"/>
+        <source>Current port: </source>
+        <translation>Port actuel :</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="56"/>
+        <source>Connection method</source>
+        <translation>Méthode de connexion</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="60"/>
+        <source>IP link</source>
+        <translation>Liaison IP</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="65"/>
+        <location filename="GpsdHostWidget.ui" line="216"/>
+        <location filename="GpsdHostWidget.cpp" line="73"/>
+        <source>Serial port</source>
+        <translation>Port série</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="89"/>
         <source>Port number</source>
         <translation>Numéro de port</translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="61"/>
+        <location filename="GpsdHostWidget.ui" line="111"/>
         <source>Protocol
 TCP: Heavy but reliable &amp; guaranteed order
 UDP: Light but unreliable &amp; unknown order
@@ -60,24 +132,74 @@ UDP : Léger mais non fiable &amp; ordre inconnu
 UDP symétrique : UDP avec port local = port distant</translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="68"/>
+        <location filename="GpsdHostWidget.ui" line="118"/>
         <source>TCP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="73"/>
+        <location filename="GpsdHostWidget.ui" line="123"/>
         <source>UDP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="78"/>
+        <location filename="GpsdHostWidget.ui" line="128"/>
         <source>Symmetric UDP</source>
         <translation>UDP symétrique</translation>
     </message>
     <message>
-        <location filename="GpsdHostWidget.ui" line="86"/>
+        <location filename="GpsdHostWidget.ui" line="136"/>
+        <source>Configure connection</source>
+        <translation>Configurer la connexion</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="139"/>
+        <source>Configure</source>
+        <translation>Configurer</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="152"/>
         <source>Remove this host</source>
         <translation>Supprimer cet hôte</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="172"/>
+        <source>Except &lt;i&gt;Low latency&lt;/i&gt;, port parameters only apply to physical serial ports. Logical ports such as Bluetooth serial ports usually ignore them.</source>
+        <translation>Mis à part &lt;i&gt;Faible latence&lt;/i&gt;, les paramètres de port ne s&apos;appliquent qu&apos;aux ports série physiques. Les ports logiques tels que les ports série Bluetooth les ignorent généralement.</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="182"/>
+        <source>Data baud rate</source>
+        <translation>Débit de données en bauds</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="189"/>
+        <source>Parity checking mode</source>
+        <translation>Mode de contrôle de la parité</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="196"/>
+        <source>Number of stop bits in a frame</source>
+        <translation>Nombre de bits d&apos;arrêt dans une trame</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="203"/>
+        <source>Flush write buffer without waiting for the event loop</source>
+        <translation>Vider le tampon d&apos;écriture sans attendre la boucle événementielle</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="206"/>
+        <source>Low latency</source>
+        <translation>Faible latence</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="223"/>
+        <source>Flow control mode</source>
+        <translation>Mode de contrôle du flux</translation>
+    </message>
+    <message>
+        <location filename="GpsdHostWidget.ui" line="230"/>
+        <source>Data bits in a frame</source>
+        <translation>Bits de données dans une trame</translation>
     </message>
 </context>
 <context>
@@ -167,8 +289,9 @@ UDP symétrique : UDP avec port local = port distant</translation>
     </message>
     <message>
         <location filename="GpsdTabSetupWidget.ui" line="27"/>
-        <source>Enter a short custom name</source>
-        <translation>Entrez un court nom personnalisé</translation>
+        <source>Short custom name</source>
+        <oldsource>Enter a short custom name</oldsource>
+        <translation>Nom court personnalisé</translation>
     </message>
     <message>
         <location filename="GpsdTabSetupWidget.ui" line="34"/>
@@ -178,7 +301,7 @@ UDP symétrique : UDP avec port local = port distant</translation>
     <message>
         <location filename="GpsdTabSetupWidget.ui" line="41"/>
         <source>Times per second to request the GPSD server</source>
-        <translation>Nombre de fois par seconde à questionner le serveur GPSD</translation>
+        <translation type="unfinished">Nombre de fois par seconde à interroger le serveur GPSD</translation>
     </message>
     <message>
         <location filename="GpsdTabSetupWidget.ui" line="66"/>
@@ -201,12 +324,7 @@ UDP symétrique : UDP avec port local = port distant</translation>
         <translation>Se reconnecter au serveur GPSD en cas de connexion perdue</translation>
     </message>
     <message>
-        <location filename="GpsdTabSetupWidget.ui" line="103"/>
-        <source>Hosts:</source>
-        <translation>Hôtes :</translation>
-    </message>
-    <message>
-        <location filename="GpsdTabSetupWidget.ui" line="143"/>
+        <location filename="GpsdTabSetupWidget.ui" line="133"/>
         <source>Add new host</source>
         <translation>Ajouter nouvel hôte</translation>
     </message>
@@ -375,63 +493,63 @@ GPSD</translation>
         <translation>Version :</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="9"/>
+        <location filename="MainWindow.cpp" line="10"/>
         <source>Connection established</source>
         <translation>Connexion établie</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="10"/>
+        <location filename="MainWindow.cpp" line="11"/>
         <source>Connection lost</source>
         <translation>Connexion perdue</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="15"/>
+        <location filename="MainWindow.cpp" line="16"/>
         <source>-bit)</source>
         <translation> bits)</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="19"/>
+        <location filename="MainWindow.cpp" line="20"/>
         <source>Add a GPSD server</source>
         <translation>Ajouter un serveur GPSD</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="154"/>
+        <location filename="MainWindow.cpp" line="160"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restaurer</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="155"/>
-        <location filename="MainWindow.cpp" line="228"/>
+        <location filename="MainWindow.cpp" line="161"/>
+        <location filename="MainWindow.cpp" line="251"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="227"/>
+        <location filename="MainWindow.cpp" line="250"/>
         <source>Do you want to quit or minimize in tray?</source>
         <translation>Voulez-vous quitter ou minimiser dans la zone de notification ?</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="229"/>
+        <location filename="MainWindow.cpp" line="252"/>
         <source>&amp;Minimize in tray</source>
         <translation>&amp;Minimiser dans la zone de notification</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="308"/>
+        <location filename="MainWindow.cpp" line="326"/>
         <source>Running</source>
         <translation>Démarré</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="310"/>
+        <location filename="MainWindow.cpp" line="328"/>
         <source>Stopped</source>
         <translation>Arrêté</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="352"/>
+        <location filename="MainWindow.cpp" line="370"/>
         <source>GPSD client &quot;</source>
         <translation>Client GPSD &quot;</translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="352"/>
+        <location filename="MainWindow.cpp" line="370"/>
         <source>&quot;</source>
         <translation>&quot;</translation>
     </message>

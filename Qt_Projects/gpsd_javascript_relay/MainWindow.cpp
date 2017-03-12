@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent):
 	// Main interface:
 	setupUi( this );
 	setWindowTitle( Application::getAppTitle()+' '+Application::getVersion() );
-	m_gBuild->setText( Application::getVersion()+QString( " (" )+QString::number( sizeof( void* )<<3 )+tr( "-bit)" ) );
+	m_gBuild->setText( Application::getVersion()+QString( " (" )+QString::number( sizeof( void* )<<3 )+tr( "-bit)" )+QString( " (Qt " )+QT_VERSION_STR+')' );
 	m_btnGpsdNewTab = new QPushButton( m_gSourcesTabs );
 		m_btnGpsdNewTab->setText( "" );
 		m_btnGpsdNewTab->setIcon( QIcon( ":/icon16_add.png" ) );
@@ -26,8 +26,10 @@ MainWindow::MainWindow(QWidget *parent):
 	connect( m_btnSources, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
 	connect( m_btnTargets, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
 	connect( m_btnAbout, SIGNAL( clicked() ), this, SLOT( selectCategory() ) );
-	QGuiApplication::setFallbackSessionManagementEnabled( false ); // logout handling
-	connect( App, SIGNAL( commitDataRequest(QSessionManager) ), SLOT( prepareLogout(QSessionManager) ) ); // logout handling
+	
+	// Logout handling:
+	QGuiApplication::setFallbackSessionManagementEnabled( false );
+	connect( App, SIGNAL( commitDataRequest(QSessionManager&) ), this, SLOT( prepareLogout(QSessionManager&) ) );
 	
 	// Load configuration:
 	QJsonObject settings = Application::getAppSettings();
@@ -96,8 +98,9 @@ MainWindow::MainWindow(QWidget *parent):
 
 void MainWindow::addedGpsdClient(GpsdClient* gpsdClient){
 	GpsdTabSetupWidget* setup = new GpsdTabSetupWidget( gpsdClient, m_gSourcesTabs );
-		setup->addHost( "192.168.43.1" );
-		setup->addHost( "192.168.42.129" );
+		setup->addHost( "192.168.44.1" ); // Android Bluetooth tethering
+		setup->addHost( "192.168.43.1" ); // Android WiFi tethering
+		setup->addHost( "192.168.42.129" ); // Android USB tethering
 		m_gSourcesTabs->addTab( setup, "Client #"+QString::number( m_gSourcesTabs->count() ) );
 	TargetTabSetupWidget* targets = new TargetTabSetupWidget( gpsdClient, m_gTargetsTabs );
 		m_gTargetsTabs->addTab( targets, "Client #"+QString::number( m_gTargetsTabs->count() ) );
@@ -106,7 +109,7 @@ void MainWindow::addedGpsdClient(GpsdClient* gpsdClient){
 	targets->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
 	setup->applyConfiguration(); // for startup: flagHasChanged() not triggered before 1st display
 	connect( gpsdClient, SIGNAL( connectionStateChanged(bool) ), this, SLOT( gpsdConnectionStateChanged(bool) ) );
-	connect( gpsdClient, SIGNAL( statusChanged(QAbstractSocket::SocketState, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( updateTrayIconColor() ) );
+	connect( gpsdClient, SIGNAL( statusChanged(QAbstractSocket::SocketState, int, QString const&, quint16 const&, QAbstractSocket::SocketType const&) ), this, SLOT( updateTrayIconColor() ) );
 }
 void MainWindow::removedGpsdClient(GpsdClient* gpsdClient){
 	GpsdTabSetupWidget* setup;
@@ -199,10 +202,17 @@ void MainWindow::saveSettings(){
 					QJsonArray hosts;
 					for( QList<struct GpsdTabSetupWidget::ConfigurationHost>::const_iterator host=c_setup.hosts.begin(); host!=c_setup.hosts.end(); ++host){
 						QJsonObject hostJson;
+							hostJson.insert( "connectionMethod", host->connectionMethod );
 							hostJson.insert( "hostName", host->hostName );
 							hostJson.insert( "port", host->port );
 							hostJson.insert( "protocol", ( int )( host->protocol ) );
 							hostJson.insert( "symmetric", host->symmetric );
+							hostJson.insert( "serialBaudRate", host->serialBaudRate );
+							hostJson.insert( "serialDataBits", host->serialDataBits );
+							hostJson.insert( "serialFlowControl", host->serialFlowControl );
+							hostJson.insert( "serialParity", host->serialParity );
+							hostJson.insert( "serialStopBits", host->serialStopBits );
+							hostJson.insert( "serialLowLatency", host->serialLowLatency );
 						hosts.append( hostJson );
 					}
 					gpsdClient.insert( "hosts", hosts );

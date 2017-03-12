@@ -4,12 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = gpsd_javascript_relay
 TEMPLATE = app
+
+QMAKE_TARGET_DESCRIPTION = "GPSD to JavaScript relay"
 
 
 SOURCES += main.cpp\
@@ -24,7 +26,8 @@ SOURCES += main.cpp\
     GpsdHost.cpp \
     Application.cpp \
     ValidatorHttpFilename.cpp \
-    ValidatorJavascriptFunction.cpp
+    ValidatorJavascriptFunction.cpp \
+    SingleInstanceData.cpp
 
 HEADERS  += MainWindow.h \
     HttpServer.h \
@@ -38,7 +41,8 @@ HEADERS  += MainWindow.h \
     Application.h \
     ValidatorHttpFilename.h \
     ValidatorJavascriptFunction.h \
-    compiler_options.h
+    compiler_options.h \
+    SingleInstanceData.h
 
 FORMS    += MainWindow.ui \
     TargetTabSetupWidget.ui \

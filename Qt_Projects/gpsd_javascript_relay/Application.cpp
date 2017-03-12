@@ -1,10 +1,9 @@
 #include "Application.h"
 
-QString const Application::s_version = "0.9.2";
+QString const Application::s_version = "0.9.3";
 QString const Application::s_appTitle = "GPSD to JavaScript relay";
 QSettings* Application::s_appSettings = 0;
 Application* Application::s_instance = 0;
-QSharedMemory* Application::s_singleInstanceHandler = 0;
 QTimer* Application::s_singleInstanceChecker = 0;
 bool Application::s_preventingMultipleInstances = false;
 Application::CommandLineOptions Application::s_commandLineOptions = {
@@ -60,42 +59,8 @@ Application::Application(int &argc, char **argv):
 		);
 	}
 	
-	// Prepare for single instance (shared memory):
-	if( !s_singleInstanceHandler ){
-		s_singleInstanceHandler = new QSharedMemory( s_appTitle );
-		if( s_singleInstanceHandler->create( sizeof( struct Application::SingleInstanceData ) ) ){ // data are random
-			if( s_singleInstanceHandler->lock() ){
-				// Set new fresh data:
-				struct Application::SingleInstanceData* singleInstanceData = ( struct Application::SingleInstanceData* )s_singleInstanceHandler->data();
-				singleInstanceData->lastRefresh = QDateTime::currentMSecsSinceEpoch();
-				singleInstanceData->newInstanceSignaled = false;
-				s_singleInstanceHandler->unlock();
-			}
-		}
-		else if( s_singleInstanceHandler->error()==QSharedMemory::AlreadyExists ){ // data are valid
-			if( s_singleInstanceHandler->attach() && s_singleInstanceHandler->lock() ){
-				// Check for other running instance:
-				struct Application::SingleInstanceData* singleInstanceData = ( struct Application::SingleInstanceData* )s_singleInstanceHandler->data();
-				if( QDateTime::currentMSecsSinceEpoch()>singleInstanceData->lastRefresh+APPLICATION_INSTANCE_TIMEOUT ){
-					// Set new fresh data:
-					singleInstanceData->lastRefresh = QDateTime::currentMSecsSinceEpoch();
-					singleInstanceData->newInstanceSignaled = false;
-				}
-				else{
-					// Prevent execution & signal the other instance:
-					singleInstanceData->newInstanceSignaled = true;
-					s_preventingMultipleInstances = true;
-				}
-				s_singleInstanceHandler->unlock();
-			}
-		}
-		if( !s_singleInstanceHandler->isAttached() ){ // failure, bypass
-			delete s_singleInstanceHandler;
-			s_singleInstanceHandler = 0;
-		}
-	}
-	
-	// Prepare for single instance (timer):
+	// Prepare for single instance:
+	SingleInstanceData::prepare();
 	if( !s_singleInstanceChecker ){
 		s_singleInstanceChecker = new QTimer();
 		s_singleInstanceChecker->setInterval( 100 );
@@ -155,6 +120,10 @@ QString const& Application::getAppTitle(){
 	return s_appTitle;
 }
 
+void Application::flagPreventingMultipleInstances(){
+	s_preventingMultipleInstances = true;
+}
+
 bool Application::isPreventingMultipleInstances(){
 	return s_preventingMultipleInstances;
 }
@@ -172,14 +141,11 @@ QString const& Application::getVersion(){
 }
 
 void Application::singleInstanceCheck(){
-	if( s_singleInstanceHandler && s_singleInstanceHandler->lock() ){
-		struct Application::SingleInstanceData* singleInstanceData = ( struct Application::SingleInstanceData* )s_singleInstanceHandler->data();
-		bool newInstanceSignaled = singleInstanceData->newInstanceSignaled;
-		// Refresh data:
-		singleInstanceData->lastRefresh = QDateTime::currentMSecsSinceEpoch();
-		singleInstanceData->newInstanceSignaled = false;
-		s_singleInstanceHandler->unlock();
-		// Signal the new instance:
+	SingleInstanceData* data = SingleInstanceData::getData();
+	if( data ){
+		bool newInstanceSignaled = data->hasNewInstanceSignaled();
+		data->refresh();
+		data->releaseMutex();
 		if( newInstanceSignaled ) emit seenNewInstance();
 	}
 }

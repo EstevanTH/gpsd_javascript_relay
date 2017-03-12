@@ -6,6 +6,7 @@ This widget class sets up the connection to GPSD servers of a GPSD client.
 #define GPSDTABSETUPWIDGET_H
 
 #include <QWidget>
+#include <QSerialPort>
 #include "ui_GpsdTabSetupWidget.h"
 #include "Application.h"
 #include "GpsdHostWidget.h"
@@ -23,10 +24,17 @@ class GpsdTabSetupWidget:
 	
 	public:
 		struct ConfigurationHost{
+			int connectionMethod;
 			QString hostName;
 			quint16 port;
 			QAbstractSocket::SocketType protocol;
 			bool symmetric;
+			qint32 serialBaudRate;
+			int serialDataBits; // cast
+			int serialFlowControl; // cast
+			int serialParity; // cast
+			int serialStopBits; // cast
+			bool serialLowLatency;
 		};
 		struct Configuration{
 			QString name;
@@ -42,8 +50,20 @@ class GpsdTabSetupWidget:
 		bool getHasChanged() const;
 		int getNumHosts() const;
 		GpsdHostWidget* addHost();
-		GpsdHostWidget* addHost(QString const& hostName, quint16 const& port=2947, QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket, bool symmetric=false);
-		void applyConfiguration();
+		GpsdHostWidget* addHost(
+			QString const& hostName,
+			quint16 const& port=2947,
+			QAbstractSocket::SocketType const& protocol=QAbstractSocket::TcpSocket,
+			bool symmetric=false,
+			int connectionMethod=0,
+			qint32 serialBaudRate=-1,
+			int serialDataBits=-1,
+			int serialFlowControl=-1,
+			int serialParity=-1,
+			int serialStopBits=-1,
+			bool serialLowLatency=true
+		);
+		void applyConfiguration(); // push configuration to the GPSD client
 		void getConfiguration(struct Configuration& c) const;
 		void setConfiguration(QJsonObject const& gpsdCSettings);
 		

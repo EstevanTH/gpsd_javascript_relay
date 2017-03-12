@@ -1,6 +1,13 @@
 #include "GpsdClient.h"
 #include "compiler_options.h"
 
+#define CAST_SOCKET( socket, socketNetwork, socketTcp, socketUdp, socketSerial ) \
+	QAbstractSocket* socketNetwork = qobject_cast<QAbstractSocket*>( socket );\
+	QTcpSocket* socketTcp = qobject_cast<QTcpSocket*>( socket );\
+	QUdpSocket* socketUdp = qobject_cast<QUdpSocket*>( socket );\
+	QSerialPort* socketSerial = qobject_cast<QSerialPort*>( socket );\
+	( void )socketNetwork; ( void )socketTcp; ( void )socketUdp; ( void )socketSerial
+
 QString GpsdClient::s_titleGpsdClient;
 QLinkedList<GpsdClient*> GpsdClient::s_gpsdClients;
 QByteArray const GpsdClient::s_requestContentTpv = "?TPV;\x0D\x0A";
@@ -20,6 +27,7 @@ GpsdClient::GpsdClient(QObject *parent):
 	m_manuallyStopped( true ),
 	m_indexConnectingHost( -1 ),
 	m_socket( 0 ),
+	m_serialLowLatency( true ),
 	m_socketValidated( false ),
 	m_requestTimer( 0 ),
 	m_expectedAnswers( 0 ),
@@ -64,9 +72,33 @@ void GpsdClient::setName(QString const& name){
 }
 void GpsdClient::setRefreshRate(double refreshRate){ m_refreshRate = refreshRate; }
 void GpsdClient::setAutoReconnect(bool autoReconnect){ m_autoReconnect = autoReconnect; }
-GpsdHost* GpsdClient::addHost(QString const& hostname, quint16 const& port, QAbstractSocket::SocketType const& protocol, bool symmetric){
+GpsdHost* GpsdClient::addHost(
+	QString const& hostname,
+	quint16 const& port,
+	QAbstractSocket::SocketType const& protocol,
+	bool symmetric,
+	int connectionMethod,
+	qint32 serialBaudRate,
+	int serialDataBits,
+	int serialFlowControl,
+	int serialParity,
+	int serialStopBits,
+	bool serialLowLatency
+){
 	GpsdHost* host = new GpsdHost( this );
-		host->modify( hostname, port, protocol, symmetric );
+		host->modify(
+			hostname,
+			port,
+			protocol,
+			symmetric,
+			connectionMethod,
+			serialBaudRate,
+			serialDataBits,
+			serialFlowControl,
+			serialParity,
+			serialStopBits,
+			serialLowLatency
+		);
 		m_hosts.append( host );
 	return host;
 }
@@ -111,23 +143,38 @@ bool GpsdClient::isDataTpvExpired() const{
 
 QAbstractSocket::SocketState GpsdClient::getConnectionStatus() const{
 	if( m_socket ){
-		QAbstractSocket::SocketState state = m_socket->state();
-		if( state==QAbstractSocket::ConnectedState ){
-			if( m_socketValidated ){
-				return QAbstractSocket::ConnectedState;
-			}
-			else{
-				QUdpSocket* socketUdp = qobject_cast<QUdpSocket*>( m_socket );
-				if( socketUdp ){ // UDP socket
-					return QAbstractSocket::ConnectingState; // liar!
-				}
-				else{ // TCP socket
+		CAST_SOCKET( m_socket, socketNetwork, socketTcp, socketUdp, socketSerial );
+		if( socketNetwork ){
+			QAbstractSocket::SocketState state = socketNetwork->state();
+			if( state==QAbstractSocket::ConnectedState ){
+				if( m_socketValidated ){
 					return QAbstractSocket::ConnectedState;
 				}
+				else{
+					if( socketUdp ){ // UDP socket
+						return QAbstractSocket::ConnectingState; // liar!
+					}
+					else{ // TCP socket
+						return QAbstractSocket::ConnectedState;
+					}
+				}
+			}
+			else{
+				return state;
 			}
 		}
 		else{
-			return state;
+			if( m_socket->isOpen() ){
+				if( m_socketValidated ){
+					return QAbstractSocket::ConnectedState;
+				}
+				else{
+					return QAbstractSocket::ConnectingState; // liar!
+				}
+			}
+			else{
+				return QAbstractSocket::UnconnectedState;
+			}
 		}
 	}
 	else{
@@ -214,25 +261,34 @@ void GpsdClient::startClient(){
 }
 
 void GpsdClient::sendRequest(QByteArray const& content){
-	if( m_socket && m_socket->isValid() ){
-		bool expired = false;
-		if( qobject_cast<QUdpSocket*>( m_socket ) ){
-			qint64 timeReference = m_lastAnswer;
-			qint64 refreshPeriod = ( 1000/m_refreshRate );
-			qint64 expireDelay = GPSD_EXPIRE_UDP_DATA;
-			if( !m_socketValidated ){
-				timeReference = m_beginConnection;
-				expireDelay = GPSD_EXPIRE_UDP_CONNECT;
+	if( m_socket ){
+		CAST_SOCKET( m_socket, socketNetwork, socketTcp, socketUdp, socketSerial );
+		if( ( socketNetwork && socketNetwork->isValid() ) || ( socketSerial && socketSerial->isOpen() ) ){
+			bool expired = false;
+			if( socketUdp || socketSerial ){
+				qint64 timeReference = m_lastAnswer;
+				qint64 refreshPeriod = ( 1000/m_refreshRate );
+				qint64 expireDelay = GPSD_EXPIRE_UDP_DATA;
+				if( !m_socketValidated ){
+					timeReference = m_beginConnection;
+					expireDelay = GPSD_EXPIRE_UDP_CONNECT;
+				}
+				expired = ( QDateTime::currentMSecsSinceEpoch()>( timeReference+expireDelay+refreshPeriod ) ); // flag expired UDP or serial connection
 			}
-			expired = ( QDateTime::currentMSecsSinceEpoch()>( timeReference+expireDelay+refreshPeriod ) ); // flag expired UDP connection
-		}
-		if( !expired ){
-			m_socket->write( content );
-			++m_expectedAnswers;
-			m_lastRequest = QDateTime::currentMSecsSinceEpoch();
-		}
-		else{
-			m_socket->abort(); // will trigger the socketFailure() signal on the right time (no crash)
+			if( !expired ){
+				m_socket->write( content );
+				++m_expectedAnswers;
+				if( socketSerial && m_serialLowLatency ) socketSerial->flush();
+				m_lastRequest = QDateTime::currentMSecsSinceEpoch();
+			}
+			else{
+				if( socketNetwork ){
+					socketNetwork->abort(); // will trigger the socketFailure() signal on the right time (no crash)
+				}
+				else{
+					m_socket->close(); // will trigger the aboutToClose() signal
+				}
+			}
 		}
 	}
 }
@@ -256,7 +312,6 @@ void GpsdClient::clearRequestTimer(){
 void GpsdClient::clearSocket(){
 	// WARNING: Recreating a UDP socket immediatly will crash the program while binding. This method should only be called when the socket is already effectively disconnected.
 	if( m_socket ){
-		m_socket->abort();
 		m_socket->deleteLater();
 		m_socket = 0;
 	}
@@ -267,42 +322,101 @@ void GpsdClient::clearSocket(){
 
 void GpsdClient::connectToHost(GpsdHost const& host){
 	// qDebug() << "GpsdClient::connectToHost" << host.m_hostname << ":" << host.m_port << host.m_protocol; // debug
-	emit hostChanged( host.m_hostname, host.m_port, host.m_protocol );
+	emit hostChanged( host.m_connectionMethod, host.m_hostname, host.m_port, host.m_protocol );
 	clearSocket();
-	if( host.m_protocol!=QAbstractSocket::UdpSocket ){ // TCP
-		m_socket = new QTcpSocket( this );
-		connect( m_socket, SIGNAL( connected() ), this, SLOT( linkValidated() ) );
+	
+	QAbstractSocket* socketNetwork = 0;
+	QTcpSocket* socketTcp = 0;
+	QUdpSocket* socketUdp = 0;
+	QSerialPort* socketSerial = 0;
+	
+	switch( host.m_connectionMethod ){
+		case 1: // serial
+			m_socket = socketSerial = new QSerialPort( this );
+		break;
+		default:
+			if( host.m_protocol!=QAbstractSocket::UdpSocket ){ // TCP
+				m_socket = socketNetwork = socketTcp = new QTcpSocket( this );
+				connect( socketNetwork, SIGNAL( connected() ), this, SLOT( linkValidated() ) );
+			}
+			else{ // UDP
+				m_socket = socketNetwork = socketUdp = new QUdpSocket( this );
+				connect( socketNetwork, SIGNAL( connected() ), this, SLOT( validateUdpLink() ) );
+			}
+		break;
 	}
-	else{ // UDP
-		m_socket = new QUdpSocket( this );
-		connect( m_socket, SIGNAL( connected() ), this, SLOT( validateUdpLink() ) );
-	}
-	m_socket->setReadBufferSize( GPSD_RECEIVE_BUFFER );
-	m_socket->setSocketOption( QAbstractSocket::ReceiveBufferSizeSocketOption, GPSD_RECEIVE_BUFFER );
-	m_socket->setSocketOption( QAbstractSocket::KeepAliveOption, 1 );
-	m_socket->setSocketOption( QAbstractSocket::LowDelayOption, 1 );
+	
 	m_bufferIn.clear();
-	// m_socket->bind() and m_socket->connectToHost() can both produce errors
-	connect( m_socket, SIGNAL( error(QAbstractSocket::SocketError) ), this, SLOT( socketError(QAbstractSocket::SocketError) ) );
-	if( host.m_symmetric ){ // symmetric UDP
-		m_socket->bind( host.m_port, QAbstractSocket::ShareAddress|QAbstractSocket::ReuseAddressHint );
+	if( socketNetwork ){
+		socketNetwork->setReadBufferSize( GPSD_RECEIVE_BUFFER );
+		socketNetwork->setSocketOption( QAbstractSocket::ReceiveBufferSizeSocketOption, GPSD_RECEIVE_BUFFER );
+		socketNetwork->setSocketOption( QAbstractSocket::KeepAliveOption, 1 );
+		socketNetwork->setSocketOption( QAbstractSocket::LowDelayOption, 1 );
+		// Note: m_socket->bind() and m_socket->connectToHost() can both produce errors.
+		connect( socketNetwork, SIGNAL( error(QAbstractSocket::SocketError) ), this, SLOT( socketError(QAbstractSocket::SocketError) ) );
 	}
-	else{ // TCP or UDP
-		m_socket->bind( 0, QAbstractSocket::DontShareAddress );
+	else{
+		if( socketSerial ){
+			socketSerial->setReadBufferSize( GPSD_RECEIVE_BUFFER );
+			if( host.m_serialBaudRate!=-1 )
+				socketSerial->setBaudRate( host.m_serialBaudRate );
+			if( host.m_serialDataBits!=-1 )
+				socketSerial->setDataBits( ( QSerialPort::DataBits )host.m_serialDataBits );
+			if( host.m_serialFlowControl!=-1 )
+				socketSerial->setFlowControl( ( QSerialPort::FlowControl )host.m_serialFlowControl );
+			if( host.m_serialParity!=-1 )
+				socketSerial->setParity( ( QSerialPort::Parity )host.m_serialParity );
+			if( host.m_serialStopBits!=-1 )
+				socketSerial->setStopBits( ( QSerialPort::StopBits )host.m_serialStopBits );
+			m_serialLowLatency = host.m_serialLowLatency;
+			connect( socketSerial, SIGNAL( errorOccurred(QSerialPort::SerialPortError) ), this, SLOT( socketError(QSerialPort::SerialPortError) ) );
+		}
 	}
-	if( m_socket->error()==QAbstractSocket::UnknownSocketError ){ // no problem
-		// The condition is mandatory in order to avoid double error trigger in case of bind error.
-		connect( m_socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ), this, SLOT( signalSocketStateChanged() ) );
-		connect( m_socket, SIGNAL( disconnected() ), this, SLOT( socketFailure() ) );
-		connect( m_socket, SIGNAL( readyRead() ), this, SLOT( incomingData() ) );
-		m_beginConnection = QDateTime::currentMSecsSinceEpoch();
-		m_socket->connectToHost( host.m_hostname, host.m_port, QIODevice::ReadWrite, QAbstractSocket::AnyIPProtocol );
+	
+	if( socketNetwork ){
+		if( host.m_symmetric ){ // symmetric UDP
+			socketNetwork->bind( host.m_port, QAbstractSocket::ShareAddress|QAbstractSocket::ReuseAddressHint );
+		}
+		else{ // TCP or UDP
+			socketNetwork->bind( 0, QAbstractSocket::DontShareAddress );
+		}
+		if( socketNetwork->error()==QAbstractSocket::UnknownSocketError ){ // no problem
+			// The condition is mandatory in order to avoid double error trigger in case of bind error.
+			connect( socketNetwork, SIGNAL( stateChanged(QAbstractSocket::SocketState) ), this, SLOT( signalSocketStateChanged() ) );
+			connect( socketNetwork, SIGNAL( disconnected() ), this, SLOT( socketFailure() ) );
+			connect( m_socket, SIGNAL( readyRead() ), this, SLOT( incomingData() ) );
+			m_beginConnection = QDateTime::currentMSecsSinceEpoch();
+			socketNetwork->connectToHost( host.m_hostname, host.m_port, QIODevice::ReadWrite, QAbstractSocket::AnyIPProtocol );
+		}
+	}
+	else if( socketSerial ){
+		socketSerial->clearError();
+		socketSerial->setPortName( host.m_hostname );
+		if( socketSerial->error()==QSerialPort::NoError ){
+			QTimer::singleShot( 1, this, SLOT( signalSocketStateChanged() ) ); // no SIGNAL for that :-(
+			connect( m_socket, SIGNAL( aboutToClose() ), this, SLOT( socketFailure() ) ); // safe?
+			connect( m_socket, SIGNAL( readyRead() ), this, SLOT( incomingData() ) );
+			m_beginConnection = QDateTime::currentMSecsSinceEpoch();
+			socketSerial->open( QIODevice::ReadWrite );
+			if( socketSerial->isOpen() ){
+				QTimer::singleShot( 1, this, SLOT( validateUdpLink() ) ); // no SIGNAL for that :-(
+			}
+		}
 	}
 }
 
 void GpsdClient::signalSocketStateChanged(){
 	if( m_socket ){
-		emit statusChanged( getConnectionStatus(), m_socket->peerName(), m_socket->peerPort(), m_socket->socketType() );
+		CAST_SOCKET( m_socket, socketNetwork, socketTcp, socketUdp, socketSerial );
+		if( socketNetwork ){
+			emit statusChanged( getConnectionStatus(), 0, socketNetwork->peerName(), socketNetwork->peerPort(), socketNetwork->socketType() );
+		}
+		else if( socketSerial ){
+			emit statusChanged( getConnectionStatus(), 1, socketSerial->portName() );
+		}
+		else{
+			emit statusChanged( getConnectionStatus() );
+		}
 	}
 	else{
 		emit statusChanged( getConnectionStatus() );
@@ -359,6 +473,14 @@ void GpsdClient::socketRetry(){
 
 void GpsdClient::socketFailure(){
 	// socketFailure() does not reconnect immediatly because it would stack connection retries when failure after failure happen. A timer is used to avoid huge stack and bind crash.
+	static bool isProcessingFailure = false;
+	if( isProcessingFailure ) return; // avoid stacking loops
+	isProcessingFailure = true;
+	
+	CAST_SOCKET( m_socket, socketNetwork, socketTcp, socketUdp, socketSerial );
+	if( socketSerial ){
+		QTimer::singleShot( 1, this, SLOT( signalSocketStateChanged() ) ); // no SIGNAL in this case :-(
+	}
 	if( m_socketValidated ){
 		emit connectionStateChanged( false );
 	}
@@ -366,12 +488,30 @@ void GpsdClient::socketFailure(){
 		QTimer::singleShot( GPSD_SOCKET_FAILURE_WAIT, this, SLOT( socketRetry() ) );
 	}
 	clearSocket();
+	
+	isProcessingFailure = false;
 }
 
 void GpsdClient::socketError(QAbstractSocket::SocketError error) const{
 	// qDebug() << "GpsdClient::socketError" << error; // debug
 	QTimer::singleShot( 1, this, SLOT( socketFailure() ) );
 	( void )error;
+}
+
+void GpsdClient::socketError(QSerialPort::SerialPortError error) const{
+	// qDebug() << "GpsdClient::socketError" << error; // debug
+	switch( error ){
+		case QSerialPort::NoError: // socket possibly still valid
+		case QSerialPort::NotOpenError:
+		case QSerialPort::WriteError:
+		case QSerialPort::ReadError:
+		case QSerialPort::TimeoutError:
+			// ignore error
+		break;
+		default: // socket invalid
+			QTimer::singleShot( 1, this, SLOT( socketFailure() ) );
+		break;
+	}
 }
 
 QString const GpsdClient::s_jsonKeyClass = "class";
@@ -397,7 +537,7 @@ QString const GpsdClient::s_jsonValueClassTpv = "TPV";
 char const GpsdClient::s_javascriptTpvObjectFormat[] = "{class:\"TPV\",device:%s,status:%s,mode:%s,time:%s,ept:%s,lat:%s,lon:%s,alt:%s,epx:%s,epy:%s,epv:%s,track:%s,speed:%s,climb:%s,epd:%s,eps:%s,epc:%s,relaytime:%s}";
 
 void GpsdClient::incomingData(){
-	if( !m_socketValidated ){ // for UDP
+	if( !m_socketValidated ){ // for UDP & serial
 		linkValidated();
 		signalSocketStateChanged();
 	}
