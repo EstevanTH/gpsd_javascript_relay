@@ -34,11 +34,6 @@
 		</script>
 	<!-- Configuration END -->
 	<script type="text/javascript">
-		setTimeout( function(){
-			document.getElementById( "vehicle" ).innerHTML = vehicle;
-			document.getElementById( "driver" ).innerHTML = driver;
-		}, 0 );
-		
 		function fillWithZero( num ){
 			var str = num.toString();
 			if( str.length<2 ){
@@ -210,4 +205,12 @@
 		</tr>
 	</table>
 </body>
+<foot>
+	<script type="text/javascript">
+		setTimeout( function(){
+			document.getElementById( "vehicle" ).innerHTML = vehicle;
+			document.getElementById( "driver" ).innerHTML = driver;
+		}, 0 );
+	</script>
+</foot>
 </html>
