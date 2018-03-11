@@ -36,7 +36,7 @@ If you use the program for a long period of time, you'll love it.
 #### Bunch of command-line parameters
 - `--confignoload` - run program with a new fresh configuration
 - `--confignosave` - do not save configuration on exit
-- `--language` - force an interface language, possible values: `en`, `fr`
+- `--language xx` - force an interface language, possible values: `en`, `fr`
 - `--minimized` - minimize in tray on startup
 - `--noautostart` - do not auto-start HTTP server and GPSD clients
 - `--traynomessages` - disable messages from tray icon
