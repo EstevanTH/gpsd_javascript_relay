@@ -1,4 +1,5 @@
 #include "HttpServer.h"
+#include <QNetworkProxy>
 
 /// Static stuff:
 HttpServer* HttpServer::s_httpServer = 0;
@@ -67,6 +68,7 @@ void HttpServer::changeSetup(HttpServerSetup const& newSetup){
 void HttpServer::startServer(){
 	if( !m_tcpServer ){
 		m_tcpServer = new QTcpServer( this );
+		m_tcpServer->setProxy( QNetworkProxy::NoProxy );
 		connect( m_tcpServer, SIGNAL( newConnection() ), this, SLOT( welcomeClient() ) );
 		m_requests = 0;
 	}

@@ -1,0 +1,1 @@
+- Il manque un espace dans "Port actuel :COM19"

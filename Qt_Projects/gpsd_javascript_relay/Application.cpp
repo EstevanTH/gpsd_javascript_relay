@@ -1,6 +1,6 @@
 #include "Application.h"
 
-QString const Application::s_version = "0.9.3";
+QString const Application::s_version = "0.9.3a";
 QString const Application::s_appTitle = "GPSD to JavaScript relay";
 QSettings* Application::s_appSettings = 0;
 Application* Application::s_instance = 0;

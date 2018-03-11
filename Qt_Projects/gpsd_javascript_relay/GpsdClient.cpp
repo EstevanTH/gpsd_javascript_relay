@@ -1,4 +1,6 @@
 #include "GpsdClient.h"
+#include <QNetworkProxy>
+
 #include "compiler_options.h"
 
 #define CAST_SOCKET( socket, socketNetwork, socketTcp, socketUdp, socketSerial ) \
@@ -352,6 +354,7 @@ void GpsdClient::connectToHost(GpsdHost const& host){
 		socketNetwork->setSocketOption( QAbstractSocket::ReceiveBufferSizeSocketOption, GPSD_RECEIVE_BUFFER );
 		socketNetwork->setSocketOption( QAbstractSocket::KeepAliveOption, 1 );
 		socketNetwork->setSocketOption( QAbstractSocket::LowDelayOption, 1 );
+		socketNetwork->setProxy( QNetworkProxy::NoProxy );
 		// Note: m_socket->bind() and m_socket->connectToHost() can both produce errors.
 		connect( socketNetwork, SIGNAL( error(QAbstractSocket::SocketError) ), this, SLOT( socketError(QAbstractSocket::SocketError) ) );
 	}
@@ -544,6 +547,7 @@ void GpsdClient::incomingData(){
 	m_expectedAnswers = 0;
 	m_lastAnswer = QDateTime::currentMSecsSinceEpoch();
 	
+	if( !m_socket ) return; // because events are not synchronous
 	m_bufferIn.append( m_socket->readAll() );
 	while( m_bufferIn.size()>0 ){
 		// WARNING: This code has not been tested under unexpected incoming traffic type!
